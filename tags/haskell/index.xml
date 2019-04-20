@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Haskell on Bartosz Nitka</title>
+    <link>http://niteria.github.io/tags/haskell/</link>
+    <description>Recent content in Haskell on Bartosz Nitka</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <copyright>&amp;copy; Copyright 2019 Bartosz Nitka</copyright>
+    <lastBuildDate>Tue, 02 Jun 2020 14:58:10 +0200</lastBuildDate>
+    
+	<atom:link href="http://niteria.github.io/tags/haskell/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Nix Notes: Overriding Haskell Packages</title>
+      <link>http://niteria.github.io/posts/nix-notes-overriding-haskell-packages/</link>
+      <pubDate>Tue, 02 Jun 2020 14:58:10 +0200</pubDate>
+      
+      <guid>http://niteria.github.io/posts/nix-notes-overriding-haskell-packages/</guid>
+      <description>Setup In one of the projects, I use a pinned version of nixpkgs based on miso. There are two advantages to that, one is that I know that miso builds with that version, and the second one is that I can take advantage of miso&amp;rsquo;s cachix cache and not compile everything from scratch.
+In the most basic form, it looks like this.
+File nixpkgs.nix:
+let bootstrap = import &amp;lt;nixpkgs&amp;gt; {}; misoTarball = bootstrap.</description>
+    </item>
+    
+    <item>
+      <title>Quick Haskell Trick</title>
+      <link>http://niteria.github.io/posts/quick-haskell-trick/</link>
+      <pubDate>Mon, 04 May 2020 01:03:09 +0200</pubDate>
+      
+      <guid>http://niteria.github.io/posts/quick-haskell-trick/</guid>
+      <description>The Haskell REPL (Read Print Eval Loop) - GHC interpreter, ghci invoked with:
+$ ghci  or:
+$ stack repl  or:
+$ cabal new-repl  or:
+$ cabal repl  is an environment enabling fast iteration.
+You can test a particular function and that&amp;rsquo;s cool and all, but you can also run an entire program in the interpreter. You do that with:
+ghci&amp;gt; :main  or
+ghci&amp;gt; main  The flow is as follows:</description>
+    </item>
+    
+    <item>
+      <title>Debugging a Safe Module</title>
+      <link>http://niteria.github.io/posts/debugging-a-safe-module/</link>
+      <pubDate>Thu, 06 Oct 2016 12:36:55 +0200</pubDate>
+      
+      <guid>http://niteria.github.io/posts/debugging-a-safe-module/</guid>
+      <description>TL;DR: change -XSafe to -XTrustworthy.
+I&amp;rsquo;ve found myself needing to add some trace statements to System/Environment.hs. The module is marked Safe, so when you try to:
+import Debug.Trace (trace)  you get the following error:
+Debug.Trace: Can&#39;t be safely imported! The module itself isn&#39;t safe.  I don&amp;rsquo;t know anything about Safe Haskell and I didn&amp;rsquo;t want to learn at the time. Removing {-# LANGUAGE Safe #-} made the Safe modules depending on System.</description>
+    </item>
+    
+  </channel>
+</rss>

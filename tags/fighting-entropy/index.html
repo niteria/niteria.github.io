@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>fighting-entropy - Bartosz Nitka</title>
+  <meta property="og:title" content="fighting-entropy - Bartosz Nitka" />
+  <meta name="twitter:title" content="fighting-entropy - Bartosz Nitka" />
+  <meta name="author" content="Bartosz Nitka"/>
+  <meta property="og:site_name" content="Bartosz Nitka" />
+  <meta property="og:url" content="http://niteria.github.io/tags/fighting-entropy/" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="generator" content="Hugo 0.55.2" />
+  <link href="/tags/fighting-entropy/index.xml" rel="alternate" type="application/rss+xml" title="Bartosz Nitka" />
+  <link href="/tags/fighting-entropy/index.xml" rel="feed" type="application/rss+xml" title="Bartosz Nitka" />
+
+  <link rel="stylesheet" href="/css/style.css" media="all" />
+  <link rel="stylesheet" href="/css/syntax.css" media="all" />
+  <link rel="stylesheet" href="/css/custom.css" media="all" />
+
+  <script src="/js/script.js"></script>
+  <script src="/js/custom.js"></script>
+  <script defer src="/js/fontawesome.js"></script>
+</head>
+
+<body>
+
+<header class="site-header">
+  <nav class="site-navi">
+    <h1 class="site-title"><a href="/">Bartosz Nitka</a></h1>
+    <ul class="site-navi-items">
+      <li class="site-navi-item-archives"><a href="/archives/" title="Archives">Archives</a></li>
+      <li class="site-navi-item-about"><a href="/about/" title="About">About</a></li>
+    </ul>
+  </nav>
+</header>
+<hr class="site-header-bottom">
+
+  <div class="breadcrumb">
+    <a href="/tags/">Tags</a> / Fighting entropy
+  </div>
+  <div class="main" role="main">
+    <section class="list taxonomy-list">
+      <article class="article">
+        <a href="/posts/repairing-a-broken-multimeter-part-2/" class="article-titles">
+          <h2 class="article-title">Repairing a Broken Multimeter Part 2</h2>
+          
+        </a>
+        <ul class="article-meta">
+          <li class="article-meta-date"><time>June 2, 2022</time></li>
+          <li class="article-meta-tags">
+            <a href="/tags/electronics/">
+              <i class="fas fa-tag"></i>
+              electronics
+            </a>&nbsp;
+          </li>
+          <li class="article-meta-tags">
+            <a href="/tags/fighting-entropy/">
+              <i class="fas fa-tag"></i>
+              fighting-entropy
+            </a>&nbsp;
+          </li>
+        </ul>
+        <div class="article-content">
+          In Repairing a Broken Multimeter, I identified a faulty capacitor C18 and desoldered it from the board. I wasn&rsquo;t sure what its purpose was and what to replace it with.
+Recently one reader, Marcin, who&rsquo;s interested in how multimeters work emailed me telling me that C18 is used in capacitance measurement, that the correct value is 1nF and that it helps with linearity for values lower than 4nF.
+I opened my multimeter and looked at the datasheet again.
+        </div>
+        <div class="article-readmore"><a href="/posts/repairing-a-broken-multimeter-part-2/">Read more...</a></div>
+        <div class="article-floatclear"></div>
+      </article>
+      <article class="article">
+        <a href="/posts/repairing-a-broken-multimeter/" class="article-titles">
+          <h2 class="article-title">Repairing a Broken Multimeter</h2>
+          
+        </a>
+        <ul class="article-meta">
+          <li class="article-meta-date"><time>March 12, 2020</time></li>
+          <li class="article-meta-tags">
+            <a href="/tags/electronics/">
+              <i class="fas fa-tag"></i>
+              electronics
+            </a>&nbsp;
+          </li>
+          <li class="article-meta-tags">
+            <a href="/tags/fighting-entropy/">
+              <i class="fas fa-tag"></i>
+              fighting-entropy
+            </a>&nbsp;
+          </li>
+        </ul>
+        <div class="article-content">
+          <p>In December 2017 my multimeter broke.
+It no longer measured resistance correctly.
+For low resistances, the numbers looked alright, but with bigger resistances, the value didn&rsquo;t go higher than about <code>40kΩ</code>.
+I only had one multimeter, so I didn&rsquo;t have anything to compare against, so how did I determine that it&rsquo;s broken for sure?</p>
+
+<p>It seemed to measure <code>1kΩ</code> accurately, so I used Ohm&rsquo;s Law and connected 10 of the <code>1kΩ</code> resistors in series.
+It read about <code>7kΩ</code>. Uh, oh.</p>
+
+<p>I ordered a new one, same model.
+I complained to my friends on Facebook and got some pity likes.
+I didn&rsquo;t know much about electronics, so I accepted that the old one is broken and only trusted the new one.
+Until it broke as well. In a similar way.</p>
+
+<p>How did I break it?
+To be honest, I don&rsquo;t know.
+I assume it was a user error.
+If I had to guess I either tried to measure the resistance on a powered circuit or tried to measure current with the red lead still in the Voltage/Resistance socket.</p>
+
+<p>Last year I asked Santa for a different multimeter as I was tired of buying them myself.
+After learning some more electronics theory I decided to take a look and try to fix it.</p>
+        </div>
+        <div class="article-readmore"><a href="/posts/repairing-a-broken-multimeter/">Read more...</a></div>
+        <div class="article-floatclear"></div>
+      </article>
+    </section>
+    
+
+  </div>
+
+
+
+<div class="site-footer">
+  <div class="copyright">&copy; Copyright 2019 Bartosz Nitka</div>
+  <ul class="site-footer-items">
+    <li class="site-footer-item-rsslink">
+      <a href="/tags/fighting-entropy/index.xml" type="application/rss+xml" target="_blank" title="RSS">
+        <i class="fas fa-rss"></i>
+      </a>
+    </li>
+    <li class="site-footer-item-about"><a href="/about/" title="About">About</a></li>
+  </ul>
+  <div class="powerdby">
+    Powered by <a href="https://gohugo.io/">Hugo</a> and <a href="https://github.com/taikii/whiteplain">Whiteplain</a>
+  </div>
+</div>
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-138681047-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+</body>
+</html>

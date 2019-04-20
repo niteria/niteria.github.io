@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>http://niteria.github.io/</loc>
+    <lastmod>2022-06-02T22:56:35+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/posts/</loc>
+    <lastmod>2022-06-02T22:56:35+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/posts/repairing-a-broken-multimeter-part-2/</loc>
+    <lastmod>2022-06-02T22:56:35+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/tags/</loc>
+    <lastmod>2022-06-02T22:56:35+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/tags/electronics/</loc>
+    <lastmod>2022-06-02T22:56:35+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/tags/fighting-entropy/</loc>
+    <lastmod>2022-06-02T22:56:35+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/tags/haskell/</loc>
+    <lastmod>2020-06-02T14:58:10+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/posts/nix-notes-overriding-haskell-packages/</loc>
+    <lastmod>2020-06-02T14:58:10+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/tags/nix/</loc>
+    <lastmod>2020-06-02T14:58:10+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/posts/quick-haskell-trick/</loc>
+    <lastmod>2020-05-04T01:03:09+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/tags/ghci/</loc>
+    <lastmod>2020-05-04T01:03:09+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/tags/short-iteration/</loc>
+    <lastmod>2020-05-04T01:03:09+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/posts/fixing-yakuake-shift-tab/</loc>
+    <lastmod>2020-04-22T20:43:09+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/tags/kde/</loc>
+    <lastmod>2020-04-22T20:43:09+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/tags/konsole/</loc>
+    <lastmod>2020-04-22T20:43:09+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/tags/ubuntu/</loc>
+    <lastmod>2020-04-22T20:43:09+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/tags/vim/</loc>
+    <lastmod>2020-04-22T20:43:09+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/tags/yakuake/</loc>
+    <lastmod>2020-04-22T20:43:09+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/posts/repairing-a-broken-multimeter/</loc>
+    <lastmod>2020-03-12T15:32:21+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/tags/tensorflow/</loc>
+    <lastmod>2019-04-20T11:32:23+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/posts/why-did-no-one-tell-me-about-gdb-add-index/</loc>
+    <lastmod>2019-04-20T11:32:23+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/tags/gdb/</loc>
+    <lastmod>2019-04-20T11:32:23+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/posts/debugging-a-safe-module/</loc>
+    <lastmod>2016-10-06T12:36:55+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/tags/debugging/</loc>
+    <lastmod>2016-10-06T12:36:55+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/posts/a-hacky-way-to-send-notifications-from-a-development-machine-on-iterm2/</loc>
+    <lastmod>2016-01-19T00:49:57+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/tags/osx/</loc>
+    <lastmod>2016-01-19T00:49:57+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/tags/iterm2/</loc>
+    <lastmod>2016-01-19T00:49:57+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/tags/mosh/</loc>
+    <lastmod>2016-01-19T00:49:57+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/tags/tmux/</loc>
+    <lastmod>2016-01-19T00:49:57+02:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/about/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/archives/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/categories/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://niteria.github.io/series/</loc>
+    <priority>0</priority>
+  </url>
+  
+</urlset>

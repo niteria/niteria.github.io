@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>TensorFlow on Bartosz Nitka</title>
+    <link>http://niteria.github.io/tags/tensorflow/</link>
+    <description>Recent content in TensorFlow on Bartosz Nitka</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <copyright>&amp;copy; Copyright 2019 Bartosz Nitka</copyright>
+    <lastBuildDate>Sat, 20 Apr 2019 11:32:23 +0200</lastBuildDate>
+    
+	<atom:link href="http://niteria.github.io/tags/tensorflow/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Why did no one tell me about gdb-add-index?</title>
+      <link>http://niteria.github.io/posts/why-did-no-one-tell-me-about-gdb-add-index/</link>
+      <pubDate>Sat, 20 Apr 2019 11:32:23 +0200</pubDate>
+      
+      <guid>http://niteria.github.io/posts/why-did-no-one-tell-me-about-gdb-add-index/</guid>
+      <description>I&amp;rsquo;ve been exploring TensorFlow internals in the past couple of weeks.
+Doing that required me to run some python scripts with a debug version of TensorFlow, set some breakpoints, examine some values, modify the script, repeat. You know, general sleuthing.
+TensorFlow core functionality is written in C++. The python package is a wrapper around C++ code + libraries at the python layer. The way that python interacts with TensorFlow core is by loading a shared object.</description>
+    </item>
+    
+  </channel>
+</rss>

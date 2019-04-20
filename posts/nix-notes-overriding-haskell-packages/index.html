@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>Nix Notes: Overriding Haskell Packages - Bartosz Nitka</title>
+  <meta property="og:title" content="Nix Notes: Overriding Haskell Packages - Bartosz Nitka" />
+  <meta name="twitter:title" content="Nix Notes: Overriding Haskell Packages - Bartosz Nitka" />
+  <meta name="description" content="Setup In one of the projects, I use a pinned version of nixpkgs based on miso. There are two advantages to that, one is that I know that miso builds with that version, and the second one is that I can take advantage of miso&rsquo;s cachix cache and not compile everything from scratch.
+In the most basic form, it looks like this.
+File nixpkgs.nix:
+let bootstrap = import &lt;nixpkgs&gt; {}; misoTarball = bootstrap.">
+  <meta property="og:description" content="Setup In one of the projects, I use a pinned version of nixpkgs based on miso. There are two advantages to that, one is that I know that miso builds with that version, and the second one is that I can take advantage of miso&rsquo;s cachix cache and not compile everything from scratch.
+In the most basic form, it looks like this.
+File nixpkgs.nix:
+let bootstrap = import &lt;nixpkgs&gt; {}; misoTarball = bootstrap.">
+  <meta name="twitter:description" content="Setup In one of the projects, I use a pinned version of nixpkgs based on miso. There are two advantages to that, one is that I know that miso builds with that version, and the second one is that I can …">
+  <meta name="author" content="Bartosz Nitka"/>
+  <meta property="og:site_name" content="Bartosz Nitka" />
+  <meta property="og:url" content="http://niteria.github.io/posts/nix-notes-overriding-haskell-packages/" />
+  <meta property="og:type" content="article" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="generator" content="Hugo 0.55.2" />
+
+  <link rel="stylesheet" href="/css/style.css" media="all" />
+  <link rel="stylesheet" href="/css/syntax.css" media="all" />
+  <link rel="stylesheet" href="/css/custom.css" media="all" />
+
+  <script src="/js/script.js"></script>
+  <script src="/js/custom.js"></script>
+  <script defer src="/js/fontawesome.js"></script>
+</head>
+
+<body>
+
+<header class="site-header">
+  <nav class="site-navi">
+    <h1 class="site-title"><a href="/">Bartosz Nitka</a></h1>
+    <ul class="site-navi-items">
+      <li class="site-navi-item-archives"><a href="/archives/" title="Archives">Archives</a></li>
+      <li class="site-navi-item-about"><a href="/about/" title="About">About</a></li>
+    </ul>
+  </nav>
+</header>
+<hr class="site-header-bottom">
+
+  <div class="main" role="main">
+    <article class="article">
+      
+      
+      <h1 class="article-title">Nix Notes: Overriding Haskell Packages</h1>
+      
+      <hr class="article-title-bottom">
+      <ul class="article-meta">
+        <li class="article-meta-date"><time>June 2, 2020</time></li>
+        <li class="article-meta-tags">
+          <a href="/tags/haskell/">
+            <i class="fas fa-tag"></i>
+            haskell
+          </a>&nbsp;
+        </li>
+        <li class="article-meta-tags">
+          <a href="/tags/nix/">
+            <i class="fas fa-tag"></i>
+            nix
+          </a>&nbsp;
+        </li>
+      </ul>
+      
+<aside class="toc">
+  <nav id="TableOfContents">
+<ul>
+<li><a href="#setup">Setup</a></li>
+<li><a href="#problem">Problem</a></li>
+<li><a href="#partial-solution">Partial solution</a></li>
+<li><a href="#full-solution">Full solution</a></li>
+<li><a href="#wrapping-up">Wrapping up</a></li>
+<li><a href="#additional-resources">Additional resources</a></li>
+</ul>
+</nav>
+</aside>
+      
+
+<h1 id="setup">Setup</h1>
+
+<p>In one of the projects, I use a pinned version of nixpkgs based on <a href="https://github.com/dmjio/miso"><code>miso</code></a>.
+There are two advantages to that, one is that I know that <code>miso</code> builds with that version,
+and the second one is that I can take advantage of <a href="https://github.com/dmjio/miso#begin"><code>miso</code>&rsquo;s <code>cachix</code> cache</a> and not compile everything from scratch.</p>
+
+<p>In the most basic form, it looks like this.</p>
+
+<p>File <code>nixpkgs.nix</code>:</p>
+
+<pre><code>let
+
+  bootstrap = import &lt;nixpkgs&gt; {};
+
+  misoTarball = bootstrap.fetchFromGitHub {
+    owner = &quot;dmjio&quot;;
+    repo = &quot;miso&quot;;
+    rev = &quot;2c193a3253216d70f0ac182fbe9c801de00363ae&quot;;
+    sha256 = &quot;1ywksdzcfd339x1hxp5pvkgbv9mdy1y0971k8v161hg33na2p8wz&quot;;
+  };
+
+  miso = import &quot;${misoTarball}&quot; { } ;
+
+  inherit (miso) pkgs;
+
+in miso.pkgs
+</code></pre>
+
+<p>I can then use it in another file to compile my local Haskell package named <code>automation-server</code>.</p>
+
+<p>File <code>default.nix</code> in the same directory as the cabal file:</p>
+
+<pre><code>let
+  pkgs = import ./nixpkgs.nix;
+  ghc865 = pkgs.haskell.packages.ghc865;
+  myPackage = ghc865.callCabal2nix &quot;automation-server&quot; ./. { };
+in myPackage
+</code></pre>
+
+<p><code>nix-build</code> compiles that package and returns the path to compiled binaries.
+Easy.</p>
+
+<h1 id="problem">Problem</h1>
+
+<p>I wanted to use the <a href="https://hackage.haskell.org/package/haxl"><code>haxl</code></a> library,
+version at least <code>2.1.0.0</code> because of <code>GenHaxl</code> having an <a href="https://hackage.haskell.org/package/haxl-2.1.2.0/changelog">incompatible number of arguments with the previous version</a>,
+so I modified the cabal file with a <code>haxl &gt;= 2.1.0.0</code> version bound.</p>
+
+<p>I was a bit surprised when it failed with:</p>
+
+<pre><code>Setup: Encountered missing dependencies:
+haxl &gt;=2.1.0.0
+</code></pre>
+
+<p>If I removed the version bound it was able to depend on <code>haxl</code>, but some older version and my code didn&rsquo;t compile.</p>
+
+<h1 id="partial-solution">Partial solution</h1>
+
+<p>I <a href="https://discourse.nixos.org/t/how-to-override-a-haskell-package-in-shell-nix/2907">eventually</a>
+<a href="https://discourse.nixos.org/t/when-haskell-dependencies-fail/2244/2">found out</a>
+<a href="https://github.com/NixOS/nixpkgs/issues/45515#issuecomment-415965329">that you can override</a>
+the version of the package in <code>pkgs</code>.</p>
+
+<p>You do it like this:</p>
+
+<pre><code>let
+  pkgs = import ./nixpkgs.nix;
+  ghc865 = pkgs.haskell.packages.ghc865.extend (self: super: {
+    haxl = self.callHackage &quot;haxl&quot; &quot;2.1.2.0&quot; {};
+  });
+  myPackage = ghc865.callCabal2nix &quot;automation-server&quot; ./. { };
+in myPackage
+</code></pre>
+
+<p>That unfortunately didn&rsquo;t work right away, I was met with this error:</p>
+
+<pre><code>building '/nix/store/qbbd8m86s90vvfjpw91wki0ihnp9hcdf-all-cabal-hashes-component-haxl-2.1.2.0.drv'...
+tar: */haxl/2.1.2.0/haxl.json: Not found in archive
+tar: */haxl/2.1.2.0/haxl.cabal: Not found in archive
+tar: Exiting with failure status due to previous errors
+</code></pre>
+
+<h1 id="full-solution">Full solution</h1>
+
+<p>It <a href="https://www.reddit.com/r/haskell/comments/91olfr/nix_with_haskell_getting_a_package_from_hackage/e2zrsxy/">turns out that for reproducibility</a>
+not only Haskell packages are pinned in nixpkgs, but also there&rsquo;s a repository
+with their hashes called <a href="https://github.com/commercialhaskell/all-cabal-hashes/tree/hackage"><code>all-cabal-hashes</code></a> that is also pinned.</p>
+
+<p>So I grabbed the latest git commit hash from <a href="https://github.com/commercialhaskell/all-cabal-hashes/tree/hackage"><code>all-cabal-hashes</code></a>,
+<code>8c7bdd9ad4bc3671b4214e32766873d443af2622</code> in my case, and modified the nix file as follows:</p>
+
+<pre><code>let
+  pkgs = import ./nixpkgs.nix;
+
+  ghc865 = (pkgs.haskell.packages.ghc865.override {
+    all-cabal-hashes = pkgs.fetchurl {
+      url = &quot;https://github.com/commercialhaskell/all-cabal-hashes/archive/8c7bdd9ad4bc3671b4214e32766873d443af2622.tar.gz&quot;;
+      sha256 = &quot;0q9qdpvn3c64rwnafcqkzzyi4z72mvvwmvn06d89fnzfpqjxvwx2&quot;;
+    };
+  }).extend (self: super: {
+      haxl = self.callHackage &quot;haxl&quot; &quot;2.1.2.0&quot; {};
+    }
+  );
+
+  myPackage = ghc865.callCabal2nix &quot;automation-server&quot; ./. { };
+in myPackage
+</code></pre>
+
+<p>That solved my problem.</p>
+
+<h1 id="wrapping-up">Wrapping up</h1>
+
+<p>You might wonder where I got the <code>sha256</code> hash for <code>all-cabal-hashes</code> or <code>miso</code>.
+I don&rsquo;t know the proper way to do it, but you can get by putting in a wrong hash
+and letting Nix tell you what the hash should have been.
+Just don&rsquo;t use a hash that was used before, because then Nix blindly uses an
+existing resource with that hash and doesn&rsquo;t even try to download yours and reverify.</p>
+
+<p>While researching this I didn&rsquo;t find anything resembling documentation for the
+Naskell infrastructure in Nix, only random forum posts and github issues.</p>
+
+<p>In the future, I plan to look into the
+<a href="https://github.com/NixOS/nixpkgs/tree/master/pkgs/development/haskell-modules">sources</a> a bit more.
+For a while, I didn&rsquo;t even know where to look for them, but now that I know where
+they are and I can parse the Nix language that will be my source of truth.
+Code never lies.</p>
+
+<h1 id="additional-resources">Additional resources</h1>
+
+<ul>
+<li><a href="https://nixos.org/nixos/nix-pills/">Nix Pills</a> is something I would
+recommend to read first, it&rsquo;s not Haskell specific</li>
+<li><a href="https://github.com/Gabriel439/haskell-nix">Nix and Haskell in production</a>
+is something that people recommend, but I need to read it again
+because I read it before reading Nix Pills</li>
+</ul>
+
+    </article>
+
+    
+
+
+    <ul class="pager article-pager">
+      <li class="pager-newer">
+          <a href="/posts/repairing-a-broken-multimeter-part-2/" data-toggle="tooltip" data-placement="top" title="Repairing a Broken Multimeter Part 2">&lt; Newer</a>
+      </li>
+      <li class="pager-older">
+        <a href="/posts/quick-haskell-trick/" data-toggle="tooltip" data-placement="top" title="Quick Haskell Trick">Older &gt;</a>
+      </li>
+    </ul>
+  </div>
+
+
+<div class="site-footer">
+  <div class="copyright">&copy; Copyright 2019 Bartosz Nitka</div>
+  <ul class="site-footer-items">
+    <li class="site-footer-item-about"><a href="/about/" title="About">About</a></li>
+  </ul>
+  <div class="powerdby">
+    Powered by <a href="https://gohugo.io/">Hugo</a> and <a href="https://github.com/taikii/whiteplain">Whiteplain</a>
+  </div>
+</div>
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-138681047-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+</body>
+</html>
