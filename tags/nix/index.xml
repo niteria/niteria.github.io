@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>nix on Bartosz Nitka</title>
+    <link>http://niteria.github.io/tags/nix/</link>
+    <description>Recent content in nix on Bartosz Nitka</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <copyright>&amp;copy; Copyright 2019 Bartosz Nitka</copyright>
+    <lastBuildDate>Tue, 02 Jun 2020 14:58:10 +0200</lastBuildDate>
+    
+	<atom:link href="http://niteria.github.io/tags/nix/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Nix Notes: Overriding Haskell Packages</title>
+      <link>http://niteria.github.io/posts/nix-notes-overriding-haskell-packages/</link>
+      <pubDate>Tue, 02 Jun 2020 14:58:10 +0200</pubDate>
+      
+      <guid>http://niteria.github.io/posts/nix-notes-overriding-haskell-packages/</guid>
+      <description>Setup In one of the projects, I use a pinned version of nixpkgs based on miso. There are two advantages to that, one is that I know that miso builds with that version, and the second one is that I can take advantage of miso&amp;rsquo;s cachix cache and not compile everything from scratch.
+In the most basic form, it looks like this.
+File nixpkgs.nix:
+let bootstrap = import &amp;lt;nixpkgs&amp;gt; {}; misoTarball = bootstrap.</description>
+    </item>
+    
+  </channel>
+</rss>

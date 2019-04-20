@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ghci on Bartosz Nitka</title>
+    <link>http://niteria.github.io/tags/ghci/</link>
+    <description>Recent content in ghci on Bartosz Nitka</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <copyright>&amp;copy; Copyright 2019 Bartosz Nitka</copyright>
+    <lastBuildDate>Mon, 04 May 2020 01:03:09 +0200</lastBuildDate>
+    
+	<atom:link href="http://niteria.github.io/tags/ghci/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Quick Haskell Trick</title>
+      <link>http://niteria.github.io/posts/quick-haskell-trick/</link>
+      <pubDate>Mon, 04 May 2020 01:03:09 +0200</pubDate>
+      
+      <guid>http://niteria.github.io/posts/quick-haskell-trick/</guid>
+      <description>The Haskell REPL (Read Print Eval Loop) - GHC interpreter, ghci invoked with:
+$ ghci  or:
+$ stack repl  or:
+$ cabal new-repl  or:
+$ cabal repl  is an environment enabling fast iteration.
+You can test a particular function and that&amp;rsquo;s cool and all, but you can also run an entire program in the interpreter. You do that with:
+ghci&amp;gt; :main  or
+ghci&amp;gt; main  The flow is as follows:</description>
+    </item>
+    
+  </channel>
+</rss>

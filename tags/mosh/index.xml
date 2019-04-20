@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>mosh on Bartosz Nitka</title>
+    <link>http://niteria.github.io/tags/mosh/</link>
+    <description>Recent content in mosh on Bartosz Nitka</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <copyright>&amp;copy; Copyright 2019 Bartosz Nitka</copyright>
+    <lastBuildDate>Tue, 19 Jan 2016 00:49:57 +0200</lastBuildDate>
+    
+	<atom:link href="http://niteria.github.io/tags/mosh/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>A Hacky Way to Send Notifications From a Development Machine on iTerm2</title>
+      <link>http://niteria.github.io/posts/a-hacky-way-to-send-notifications-from-a-development-machine-on-iterm2/</link>
+      <pubDate>Tue, 19 Jan 2016 00:49:57 +0200</pubDate>
+      
+      <guid>http://niteria.github.io/posts/a-hacky-way-to-send-notifications-from-a-development-machine-on-iterm2/</guid>
+      <description>When hacking on something in a language that&amp;rsquo;s compiled, some compiles take a long time. So long that it doesn&amp;rsquo;t make sense to wait and watch it. You can do some lightweight tasks in the meantime - respond to emails, review diffs&amp;hellip; The problem is, unless you leave your terminal visible, you won&amp;rsquo;t know it&amp;rsquo;s done the moment it is done.
+The solution is to send a notification once it&amp;rsquo;s compiled.</description>
+    </item>
+    
+  </channel>
+</rss>

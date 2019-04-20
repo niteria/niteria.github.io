@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>kde on Bartosz Nitka</title>
+    <link>http://niteria.github.io/tags/kde/</link>
+    <description>Recent content in kde on Bartosz Nitka</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <copyright>&amp;copy; Copyright 2019 Bartosz Nitka</copyright>
+    <lastBuildDate>Wed, 22 Apr 2020 20:43:09 +0200</lastBuildDate>
+    
+	<atom:link href="http://niteria.github.io/tags/kde/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Fixing Yakuake Shift&#43;Tab</title>
+      <link>http://niteria.github.io/posts/fixing-yakuake-shift-tab/</link>
+      <pubDate>Wed, 22 Apr 2020 20:43:09 +0200</pubDate>
+      
+      <guid>http://niteria.github.io/posts/fixing-yakuake-shift-tab/</guid>
+      <description>I upgraded my Ubuntu recently from 19.04 (Disco) to 19.10 (Eoan Ermine). At some point, I noticed that Shift+Tab stopped working in vim. I use nvim and have Tab configured to move to the next tab and Shift+Tab configured to move to the previous tab. Tab worked, Shift+Tab didn&amp;rsquo;t.
+It&amp;rsquo;s two lines in my .vimrc:
+nmap &amp;lt;Tab&amp;gt; :tabnext&amp;lt;enter&amp;gt; nmap &amp;lt;S-Tab&amp;gt; :tabprev&amp;lt;enter&amp;gt;  Maybe it&amp;rsquo;s nvim? At first, I suspected it&amp;rsquo;s a problem with nvim since I upgraded it as well and there is some old article mentioning how to get Shift+Tab to work.</description>
+    </item>
+    
+  </channel>
+</rss>
