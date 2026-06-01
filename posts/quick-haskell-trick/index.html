@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>Quick Haskell Trick - Bartosz Nitka</title>
+  <meta property="og:title" content="Quick Haskell Trick - Bartosz Nitka" />
+  <meta name="twitter:title" content="Quick Haskell Trick - Bartosz Nitka" />
+  <meta name="description" content="The Haskell REPL (Read Print Eval Loop) - GHC interpreter, ghci invoked with:
+$ ghci
+or:
+$ stack repl
+or:
+$ cabal new-repl 
+or:
+$ cabal repl
+is an environment enabling fast iteration.
+You can test a particular function and that&rsquo;s cool and all, but you can
+also run an entire program in the interpreter.
+You do that with:
+ghci&gt; :main
+or
+ghci&gt; main
+The flow is as follows:
+
+You make some changes in your editor
+
+
+You :r or :reload
+You make some more changes to make it compile
+You :r again
+You run :main to play around with your program
+You Ctrl-C to kill the program
+Go back to step one
+
+What&rsquo;s a little inefficient is that to run your new version of a program you
+have to issue two commands: :r and :main.">
+  <meta property="og:description" content="The Haskell REPL (Read Print Eval Loop) - GHC interpreter, ghci invoked with:
+$ ghci
+or:
+$ stack repl
+or:
+$ cabal new-repl 
+or:
+$ cabal repl
+is an environment enabling fast iteration.
+You can test a particular function and that&rsquo;s cool and all, but you can
+also run an entire program in the interpreter.
+You do that with:
+ghci&gt; :main
+or
+ghci&gt; main
+The flow is as follows:
+
+You make some changes in your editor
+
+
+You :r or :reload
+You make some more changes to make it compile
+You :r again
+You run :main to play around with your program
+You Ctrl-C to kill the program
+Go back to step one
+
+What&rsquo;s a little inefficient is that to run your new version of a program you
+have to issue two commands: :r and :main.">
+  <meta name="twitter:description" content="The Haskell REPL (Read Print Eval Loop) - GHC interpreter, ghci invoked with:
+$ ghci
+or:
+$ stack repl
+or:
+$ cabal new-repl 
+or:
+$ cabal repl
+is an environment enabling fast iteration.
+You can test a …">
+  <meta name="author" content="Bartosz Nitka"/>
+  <meta property="og:site_name" content="Bartosz Nitka" />
+  <meta property="og:url" content="http://niteria.github.io/posts/quick-haskell-trick/" />
+  <meta property="og:type" content="article" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="generator" content="Hugo 0.158.0">
+  <link rel="stylesheet" href="/css/style.css" media="all" />
+
+  <link rel="stylesheet" href="/css/syntax.css" media="all" />
+  <link rel="stylesheet" href="/css/custom.css" media="all" />
+
+  <script src="/js/script.js"></script>
+  <script src="/js/custom.js"></script>
+  <script defer src="/fontawesome/all.min.js"></script>
+</head>
+
+<body>
+
+<header class="site-header">
+  <nav class="site-navi">
+    <h1 class="site-title"><a href="/">Bartosz Nitka</a></h1>
+    <ul class="site-navi-items">
+      <li class="site-navi-item-archives"><a href="/archives/" title="Archives">Archives</a></li>
+      <li class="site-navi-item-about"><a href="/about/" title="About">About</a></li>
+    </ul>
+  </nav>
+</header>
+<hr class="site-header-bottom">
+
+  <div class="main" role="main">
+    <article class="article">
+      
+      
+      <h1 class="article-title">Quick Haskell Trick</h1>
+      
+      <hr class="article-title-bottom">
+      <ul class="article-meta">
+        <li class="article-meta-date"><time>May 4, 2020</time></li>
+        <li class="article-meta-tags">
+          <a href="/tags/haskell/">
+            <i class="fa-solid fa-tag"></i>
+            haskell
+          </a>&nbsp;
+        </li>
+        <li class="article-meta-tags">
+          <a href="/tags/ghci/">
+            <i class="fa-solid fa-tag"></i>
+            ghci
+          </a>&nbsp;
+        </li>
+        <li class="article-meta-tags">
+          <a href="/tags/short-iteration/">
+            <i class="fa-solid fa-tag"></i>
+            short-iteration
+          </a>&nbsp;
+        </li>
+      </ul>
+      
+      <p>The Haskell REPL (Read Print Eval Loop) - GHC interpreter, <code>ghci</code> invoked with:</p>
+<pre tabindex="0"><code>$ ghci
+</code></pre><p>or:</p>
+<pre tabindex="0"><code>$ stack repl
+</code></pre><p>or:</p>
+<pre tabindex="0"><code>$ cabal new-repl 
+</code></pre><p>or:</p>
+<pre tabindex="0"><code>$ cabal repl
+</code></pre><p>is an environment enabling fast iteration.</p>
+<p>You can test a particular function and that&rsquo;s cool and all, but you can
+also run an entire program in the interpreter.
+You do that with:</p>
+<pre tabindex="0"><code>ghci&gt; :main
+</code></pre><p>or</p>
+<pre tabindex="0"><code>ghci&gt; main
+</code></pre><p>The flow is as follows:</p>
+<ol>
+<li>You make some changes in your editor</li>
+</ol>
+<ul>
+<li>You <code>:r</code> or <code>:reload</code></li>
+<li>You make some more changes to make it compile</li>
+<li>You <code>:r</code> again</li>
+<li>You run <code>:main</code> to play around with your program</li>
+<li>You <code>Ctrl-C</code> to kill the program</li>
+<li>Go back to step one</li>
+</ul>
+<p>What&rsquo;s a little inefficient is that to run your new version of a program you
+have to issue two commands: <code>:r</code> and <code>:main</code>.</p>
+<p>We can do better though, <code>ghci</code> lets you define your custom commands.
+Here&rsquo;s the incantation:</p>
+<pre tabindex="0"><code>ghci&gt; :def g \_ -&gt; return &#34;:r\n:main&#34;
+</code></pre><p>Now you can just:</p>
+<pre tabindex="0"><code>ghci&gt; :g
+</code></pre><p>and it will <code>:reload</code> and run <code>:main</code> for you.</p>
+<p>It&rsquo;s not smart enough to understand when <code>:reload</code> fails, but that&rsquo;s OK because
+if <code>:reload</code> fails there&rsquo;s no <code>main</code> and <code>:main</code> fails as well.</p>
+
+    </article>
+
+    
+
+
+    <ul class="pager article-pager">
+      <li class="pager-newer">
+          <a href="/posts/nix-notes-overriding-haskell-packages/" data-toggle="tooltip" data-placement="top" title="Nix Notes: Overriding Haskell Packages">&lt; Newer</a>
+      </li>
+      <li class="pager-older">
+        <a href="/posts/fixing-yakuake-shift-tab/" data-toggle="tooltip" data-placement="top" title="Fixing Yakuake Shift&#43;Tab">Older &gt;</a>
+      </li>
+    </ul>
+  </div>
+
+
+<div class="site-footer">
+  <div class="copyright">&copy; Copyright 2019 Bartosz Nitka</div>
+  <ul class="site-footer-items">
+    <li class="site-footer-item-about"><a href="/about/" title="About">About</a></li>
+  </ul>
+  <div class="powerdby">
+    Powered by <a href="https://gohugo.io/">Hugo</a> and <a href="https://github.com/taikii/whiteplain">Whiteplain</a>
+  </div>
+</div>
+
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-P5EZCXRPMM"></script>
+      <script>
+        var doNotTrack = false;
+        if ( true ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-P5EZCXRPMM');
+        }
+      </script>
+
+</body>
+</html>

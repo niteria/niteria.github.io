@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Bartosz Nitka</title>
+    <link>http://niteria.github.io/posts/</link>
+    <description>Recent content in Posts on Bartosz Nitka</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <managingEditor>niteria@gmail.com (Bartosz Nitka)</managingEditor>
+    <webMaster>niteria@gmail.com (Bartosz Nitka)</webMaster>
+    <copyright>&amp;copy; Copyright 2019 Bartosz Nitka</copyright>
+    <lastBuildDate>Thu, 02 Jun 2022 22:56:35 +0200</lastBuildDate>
+    <atom:link href="http://niteria.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Repairing a Broken Multimeter Part 2</title>
+      <link>http://niteria.github.io/posts/repairing-a-broken-multimeter-part-2/</link>
+      <pubDate>Thu, 02 Jun 2022 22:56:35 +0200</pubDate><author>niteria@gmail.com (Bartosz Nitka)</author>
+      <guid>http://niteria.github.io/posts/repairing-a-broken-multimeter-part-2/</guid>
+      <description>&lt;p&gt;In&#xA;&lt;a href=&#34;http://niteria.github.io/posts/repairing-a-broken-multimeter/&#34; title=&#34;Repairing a Broken Multimeter&#34;&gt;Repairing a Broken Multimeter&lt;/a&gt;,&#xA;I identified a faulty capacitor &lt;code&gt;C18&lt;/code&gt; and desoldered it from the board.&#xA;I wasn&amp;rsquo;t sure what its purpose was and what to replace it with.&lt;/p&gt;&#xA;&lt;p&gt;Recently one reader, &lt;strong&gt;Marcin&lt;/strong&gt;, who&amp;rsquo;s interested in how multimeters work emailed me telling me that &lt;code&gt;C18&lt;/code&gt; is used in capacitance measurement, that the correct value is &lt;code&gt;1nF&lt;/code&gt; and that it helps with linearity for values lower than &lt;code&gt;4nF&lt;/code&gt;.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Nix Notes: Overriding Haskell Packages</title>
+      <link>http://niteria.github.io/posts/nix-notes-overriding-haskell-packages/</link>
+      <pubDate>Tue, 02 Jun 2020 14:58:10 +0200</pubDate><author>niteria@gmail.com (Bartosz Nitka)</author>
+      <guid>http://niteria.github.io/posts/nix-notes-overriding-haskell-packages/</guid>
+      <description>&lt;h1 id=&#34;setup&#34;&gt;Setup&lt;/h1&gt;&#xA;&lt;p&gt;In one of the projects, I use a pinned version of nixpkgs based on &lt;a href=&#34;https://github.com/dmjio/miso&#34;&gt;&lt;code&gt;miso&lt;/code&gt;&lt;/a&gt;.&#xA;There are two advantages to that, one is that I know that &lt;code&gt;miso&lt;/code&gt; builds with that version,&#xA;and the second one is that I can take advantage of &lt;a href=&#34;https://github.com/dmjio/miso#begin&#34;&gt;&lt;code&gt;miso&lt;/code&gt;&amp;rsquo;s &lt;code&gt;cachix&lt;/code&gt; cache&lt;/a&gt; and not compile everything from scratch.&lt;/p&gt;&#xA;&lt;p&gt;In the most basic form, it looks like this.&lt;/p&gt;&#xA;&lt;p&gt;File &lt;code&gt;nixpkgs.nix&lt;/code&gt;:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;let&#xA;&#xA;  bootstrap = import &amp;lt;nixpkgs&amp;gt; {};&#xA;&#xA;  misoTarball = bootstrap.fetchFromGitHub {&#xA;    owner = &amp;#34;dmjio&amp;#34;;&#xA;    repo = &amp;#34;miso&amp;#34;;&#xA;    rev = &amp;#34;2c193a3253216d70f0ac182fbe9c801de00363ae&amp;#34;;&#xA;    sha256 = &amp;#34;1ywksdzcfd339x1hxp5pvkgbv9mdy1y0971k8v161hg33na2p8wz&amp;#34;;&#xA;  };&#xA;&#xA;  miso = import &amp;#34;${misoTarball}&amp;#34; { } ;&#xA;&#xA;  inherit (miso) pkgs;&#xA;&#xA;in miso.pkgs&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;I can then use it in another file to compile my local Haskell package named &lt;code&gt;automation-server&lt;/code&gt;.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Quick Haskell Trick</title>
+      <link>http://niteria.github.io/posts/quick-haskell-trick/</link>
+      <pubDate>Mon, 04 May 2020 01:03:09 +0200</pubDate><author>niteria@gmail.com (Bartosz Nitka)</author>
+      <guid>http://niteria.github.io/posts/quick-haskell-trick/</guid>
+      <description>&lt;p&gt;The Haskell REPL (Read Print Eval Loop) - GHC interpreter, &lt;code&gt;ghci&lt;/code&gt; invoked with:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ ghci&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;or:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ stack repl&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;or:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ cabal new-repl &#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;or:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ cabal repl&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;is an environment enabling fast iteration.&lt;/p&gt;&#xA;&lt;p&gt;You can test a particular function and that&amp;rsquo;s cool and all, but you can&#xA;also run an entire program in the interpreter.&#xA;You do that with:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;ghci&amp;gt; :main&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;or&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;ghci&amp;gt; main&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The flow is as follows:&lt;/p&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;You make some changes in your editor&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;You &lt;code&gt;:r&lt;/code&gt; or &lt;code&gt;:reload&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;You make some more changes to make it compile&lt;/li&gt;&#xA;&lt;li&gt;You &lt;code&gt;:r&lt;/code&gt; again&lt;/li&gt;&#xA;&lt;li&gt;You run &lt;code&gt;:main&lt;/code&gt; to play around with your program&lt;/li&gt;&#xA;&lt;li&gt;You &lt;code&gt;Ctrl-C&lt;/code&gt; to kill the program&lt;/li&gt;&#xA;&lt;li&gt;Go back to step one&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;What&amp;rsquo;s a little inefficient is that to run your new version of a program you&#xA;have to issue two commands: &lt;code&gt;:r&lt;/code&gt; and &lt;code&gt;:main&lt;/code&gt;.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Fixing Yakuake Shift&#43;Tab</title>
+      <link>http://niteria.github.io/posts/fixing-yakuake-shift-tab/</link>
+      <pubDate>Wed, 22 Apr 2020 20:43:09 +0200</pubDate><author>niteria@gmail.com (Bartosz Nitka)</author>
+      <guid>http://niteria.github.io/posts/fixing-yakuake-shift-tab/</guid>
+      <description>&lt;p&gt;I upgraded my Ubuntu recently from 19.04 (Disco) to 19.10 (Eoan Ermine).&#xA;At some point, I noticed that &lt;code&gt;Shift+Tab&lt;/code&gt; stopped working in &lt;code&gt;vim&lt;/code&gt;.&#xA;I use &lt;code&gt;nvim&lt;/code&gt; and have &lt;code&gt;Tab&lt;/code&gt; configured to move to the next tab and &lt;code&gt;Shift+Tab&lt;/code&gt; configured to move to the previous tab.&#xA;&lt;code&gt;Tab&lt;/code&gt; worked, &lt;code&gt;Shift+Tab&lt;/code&gt; didn&amp;rsquo;t.&lt;/p&gt;&#xA;&lt;p&gt;It&amp;rsquo;s two lines in my &lt;code&gt;.vimrc&lt;/code&gt;:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;nmap &amp;lt;Tab&amp;gt; :tabnext&amp;lt;enter&amp;gt;&#xA;nmap &amp;lt;S-Tab&amp;gt; :tabprev&amp;lt;enter&amp;gt;&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;maybe-its-nvim&#34;&gt;Maybe it&amp;rsquo;s nvim?&lt;/h1&gt;&#xA;&lt;p&gt;At first, I suspected it&amp;rsquo;s a problem with &lt;code&gt;nvim&lt;/code&gt; since I upgraded it as well and there is &lt;a href=&#34;https://vim.fandom.com/wiki/Make_Shift-Tab_work&#34;&gt;some old article&lt;/a&gt; mentioning how to get &lt;code&gt;Shift+Tab&lt;/code&gt; to work.&#xA;While old it provided some nice way of checking if &lt;code&gt;vim&lt;/code&gt; has received the keys.&#xA;If in insert mode you press &lt;code&gt;Ctrl+V&lt;/code&gt; it &lt;a href=&#34;https://unix.stackexchange.com/questions/366869/what-does-ctrlv-do-in-vim&#34;&gt;tries to write the literal character of what you pressed into the file instead of interpreting it in some way&lt;/a&gt;.&#xA;Again, for &lt;code&gt;Tab&lt;/code&gt; it worked, and for &lt;code&gt;Shift+Tab&lt;/code&gt; it didn&amp;rsquo;t.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Repairing a Broken Multimeter</title>
+      <link>http://niteria.github.io/posts/repairing-a-broken-multimeter/</link>
+      <pubDate>Thu, 12 Mar 2020 15:32:21 +0100</pubDate><author>niteria@gmail.com (Bartosz Nitka)</author>
+      <guid>http://niteria.github.io/posts/repairing-a-broken-multimeter/</guid>
+      <description>&lt;p&gt;In December 2017 my multimeter broke.&#xA;It no longer measured resistance correctly.&#xA;For low resistances, the numbers looked alright, but with bigger resistances, the value didn&amp;rsquo;t go higher than about &lt;code&gt;40kΩ&lt;/code&gt;.&#xA;I only had one multimeter, so I didn&amp;rsquo;t have anything to compare against, so how did I determine that it&amp;rsquo;s broken for sure?&lt;/p&gt;&#xA;&lt;p&gt;It seemed to measure &lt;code&gt;1kΩ&lt;/code&gt; accurately, so I used Ohm&amp;rsquo;s Law and connected 10 of the &lt;code&gt;1kΩ&lt;/code&gt; resistors in series.&#xA;It read about &lt;code&gt;7kΩ&lt;/code&gt;. Uh, oh.&lt;/p&gt;&#xA;&lt;p&gt;I ordered a new one, same model.&#xA;I complained to my friends on Facebook and got some pity likes.&#xA;I didn&amp;rsquo;t know much about electronics, so I accepted that the old one is broken and only trusted the new one.&#xA;Until it broke as well. In a similar way.&lt;/p&gt;&#xA;&lt;p&gt;How did I break it?&#xA;To be honest, I don&amp;rsquo;t know.&#xA;I assume it was a user error.&#xA;If I had to guess I either tried to measure the resistance on a powered circuit or tried to measure current with the red lead still in the Voltage/Resistance socket.&lt;/p&gt;&#xA;&lt;p&gt;Last year I asked Santa for a different multimeter as I was tired of buying them myself.&#xA;After learning some more electronics theory I decided to take a look and try to fix it.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Why did no one tell me about gdb-add-index?</title>
+      <link>http://niteria.github.io/posts/why-did-no-one-tell-me-about-gdb-add-index/</link>
+      <pubDate>Sat, 20 Apr 2019 11:32:23 +0200</pubDate><author>niteria@gmail.com (Bartosz Nitka)</author>
+      <guid>http://niteria.github.io/posts/why-did-no-one-tell-me-about-gdb-add-index/</guid>
+      <description>&lt;p&gt;I&amp;rsquo;ve been exploring TensorFlow internals in the past couple of weeks.&lt;/p&gt;&#xA;&lt;p&gt;Doing that required me to run some python scripts with a debug version of TensorFlow, set some breakpoints, examine some values, modify the script, repeat. You know, general sleuthing.&lt;/p&gt;&#xA;&lt;p&gt;TensorFlow core functionality is written in C++. The python package is a wrapper around C++ code + libraries at the python layer. The way that python interacts with TensorFlow core is by loading a shared object.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Debugging a Safe Module</title>
+      <link>http://niteria.github.io/posts/debugging-a-safe-module/</link>
+      <pubDate>Thu, 06 Oct 2016 12:36:55 +0200</pubDate><author>niteria@gmail.com (Bartosz Nitka)</author>
+      <guid>http://niteria.github.io/posts/debugging-a-safe-module/</guid>
+      <description>&lt;p&gt;&lt;strong&gt;TL;DR: change &lt;code&gt;-XSafe&lt;/code&gt; to &lt;code&gt;-XTrustworthy&lt;/code&gt;.&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;p&gt;I&amp;rsquo;ve found myself needing to add some trace statements to &lt;code&gt;System/Environment.hs&lt;/code&gt;.&#xA;The module is marked &lt;code&gt;Safe&lt;/code&gt;, so when you try to:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;import Debug.Trace (trace)&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;you get the following error:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;Debug.Trace: Can&amp;#39;t be safely imported!&#xA;The module itself isn&amp;#39;t safe.&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;I don&amp;rsquo;t know anything about Safe Haskell and I didn&amp;rsquo;t want to learn at the time.&#xA;Removing &lt;code&gt;{-# LANGUAGE Safe #-}&lt;/code&gt; made the &lt;code&gt;Safe&lt;/code&gt; modules depending on&#xA;&lt;code&gt;System.Environment&lt;/code&gt; (the module I was trying to debug) fail to compile,&#xA;so that wasn&amp;rsquo;t an option.&#xA;Turns out you can just bypass this by marking your module as &lt;code&gt;Trustworthy&lt;/code&gt;:&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>A Hacky Way to Send Notifications From a Development Machine on iTerm2</title>
+      <link>http://niteria.github.io/posts/a-hacky-way-to-send-notifications-from-a-development-machine-on-iterm2/</link>
+      <pubDate>Tue, 19 Jan 2016 00:49:57 +0200</pubDate><author>niteria@gmail.com (Bartosz Nitka)</author>
+      <guid>http://niteria.github.io/posts/a-hacky-way-to-send-notifications-from-a-development-machine-on-iterm2/</guid>
+      <description>&lt;p&gt;When hacking on something in a language that&amp;rsquo;s compiled, some compiles take a&#xA;long time.  So long that it doesn&amp;rsquo;t make sense to wait and watch it. You can do&#xA;some lightweight tasks in the meantime - respond to emails, review diffs&amp;hellip;&#xA;The problem is, unless you leave your terminal visible, you won&amp;rsquo;t know it&amp;rsquo;s done&#xA;the moment it is done.&lt;/p&gt;&#xA;&lt;p&gt;The solution is to send a notification once it&amp;rsquo;s compiled.&#xA;This is not a new idea, &lt;code&gt;iTerm2&lt;/code&gt; has support for notifications from within a&#xA;terminal via a special escape code. Problem solved? Kind of. If you only use&#xA;&lt;code&gt;iTerm2&lt;/code&gt;, then it works like a charm.  But if you use a combination of &lt;code&gt;iTerm2&lt;/code&gt;&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

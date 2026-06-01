@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Debugging on Bartosz Nitka</title>
+    <link>http://niteria.github.io/tags/debugging/</link>
+    <description>Recent content in Debugging on Bartosz Nitka</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <managingEditor>niteria@gmail.com (Bartosz Nitka)</managingEditor>
+    <webMaster>niteria@gmail.com (Bartosz Nitka)</webMaster>
+    <copyright>&amp;copy; Copyright 2019 Bartosz Nitka</copyright>
+    <lastBuildDate>Thu, 06 Oct 2016 12:36:55 +0200</lastBuildDate>
+    <atom:link href="http://niteria.github.io/tags/debugging/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Debugging a Safe Module</title>
+      <link>http://niteria.github.io/posts/debugging-a-safe-module/</link>
+      <pubDate>Thu, 06 Oct 2016 12:36:55 +0200</pubDate><author>niteria@gmail.com (Bartosz Nitka)</author>
+      <guid>http://niteria.github.io/posts/debugging-a-safe-module/</guid>
+      <description>&lt;p&gt;&lt;strong&gt;TL;DR: change &lt;code&gt;-XSafe&lt;/code&gt; to &lt;code&gt;-XTrustworthy&lt;/code&gt;.&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;p&gt;I&amp;rsquo;ve found myself needing to add some trace statements to &lt;code&gt;System/Environment.hs&lt;/code&gt;.&#xA;The module is marked &lt;code&gt;Safe&lt;/code&gt;, so when you try to:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;import Debug.Trace (trace)&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;you get the following error:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;Debug.Trace: Can&amp;#39;t be safely imported!&#xA;The module itself isn&amp;#39;t safe.&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;I don&amp;rsquo;t know anything about Safe Haskell and I didn&amp;rsquo;t want to learn at the time.&#xA;Removing &lt;code&gt;{-# LANGUAGE Safe #-}&lt;/code&gt; made the &lt;code&gt;Safe&lt;/code&gt; modules depending on&#xA;&lt;code&gt;System.Environment&lt;/code&gt; (the module I was trying to debug) fail to compile,&#xA;so that wasn&amp;rsquo;t an option.&#xA;Turns out you can just bypass this by marking your module as &lt;code&gt;Trustworthy&lt;/code&gt;:&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

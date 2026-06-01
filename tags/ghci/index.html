@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>Ghci - Bartosz Nitka</title>
+  <meta property="og:title" content="Ghci - Bartosz Nitka" />
+  <meta name="twitter:title" content="Ghci - Bartosz Nitka" />
+  <meta name="author" content="Bartosz Nitka"/>
+  <meta property="og:site_name" content="Bartosz Nitka" />
+  <meta property="og:url" content="http://niteria.github.io/tags/ghci/" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="generator" content="Hugo 0.158.0">
+  <link href="/tags/ghci/index.xml" rel="alternate" type="application/rss+xml" title="Bartosz Nitka" />
+  <link href="/tags/ghci/index.xml" rel="feed" type="application/rss+xml" title="Bartosz Nitka" />
+  <link rel="stylesheet" href="/css/style.css" media="all" />
+
+  <link rel="stylesheet" href="/css/syntax.css" media="all" />
+  <link rel="stylesheet" href="/css/custom.css" media="all" />
+
+  <script src="/js/script.js"></script>
+  <script src="/js/custom.js"></script>
+  <script defer src="/fontawesome/all.min.js"></script>
+</head>
+
+<body>
+
+<header class="site-header">
+  <nav class="site-navi">
+    <h1 class="site-title"><a href="/">Bartosz Nitka</a></h1>
+    <ul class="site-navi-items">
+      <li class="site-navi-item-archives"><a href="/archives/" title="Archives">Archives</a></li>
+      <li class="site-navi-item-about"><a href="/about/" title="About">About</a></li>
+    </ul>
+  </nav>
+</header>
+<hr class="site-header-bottom">
+
+  <div class="main" role="main">
+    <section class="list term-list">
+      <article class="article">
+        <a href="/posts/quick-haskell-trick/" class="article-titles">
+          <h2 class="article-title">Quick Haskell Trick</h2>
+          
+        </a>
+        <ul class="article-meta">
+          <li class="article-meta-date"><time>May 4, 2020</time></li>
+          <li class="article-meta-tags">
+            <a href="/tags/haskell/">
+              <i class="fa-solid fa-tag"></i>
+              haskell
+            </a>&nbsp;
+          </li>
+          <li class="article-meta-tags">
+            <a href="/tags/ghci/">
+              <i class="fa-solid fa-tag"></i>
+              ghci
+            </a>&nbsp;
+          </li>
+          <li class="article-meta-tags">
+            <a href="/tags/short-iteration/">
+              <i class="fa-solid fa-tag"></i>
+              short-iteration
+            </a>&nbsp;
+          </li>
+        </ul>
+        <div class="article-content">
+          <p>The Haskell REPL (Read Print Eval Loop) - GHC interpreter, <code>ghci</code> invoked with:</p>
+<pre tabindex="0"><code>$ ghci
+</code></pre><p>or:</p>
+<pre tabindex="0"><code>$ stack repl
+</code></pre><p>or:</p>
+<pre tabindex="0"><code>$ cabal new-repl 
+</code></pre><p>or:</p>
+<pre tabindex="0"><code>$ cabal repl
+</code></pre><p>is an environment enabling fast iteration.</p>
+<p>You can test a particular function and that&rsquo;s cool and all, but you can
+also run an entire program in the interpreter.
+You do that with:</p>
+<pre tabindex="0"><code>ghci&gt; :main
+</code></pre><p>or</p>
+<pre tabindex="0"><code>ghci&gt; main
+</code></pre><p>The flow is as follows:</p>
+<ol>
+<li>You make some changes in your editor</li>
+</ol>
+<ul>
+<li>You <code>:r</code> or <code>:reload</code></li>
+<li>You make some more changes to make it compile</li>
+<li>You <code>:r</code> again</li>
+<li>You run <code>:main</code> to play around with your program</li>
+<li>You <code>Ctrl-C</code> to kill the program</li>
+<li>Go back to step one</li>
+</ul>
+<p>What&rsquo;s a little inefficient is that to run your new version of a program you
+have to issue two commands: <code>:r</code> and <code>:main</code>.</p>
+        </div>
+        <div class="article-readmore"><a href="/posts/quick-haskell-trick/">Read more...</a></div>
+        <div class="article-floatclear"></div>
+      </article>
+    </section>
+    
+  </div>
+
+
+
+<div class="site-footer">
+  <div class="copyright">&copy; Copyright 2019 Bartosz Nitka</div>
+  <ul class="site-footer-items">
+    <li class="site-footer-item-rsslink">
+      <a href="/tags/ghci/index.xml" type="application/rss+xml" target="_blank" title="RSS">
+        <i class="fa-solid fa-rss"></i>
+      </a>
+    </li>
+    <li class="site-footer-item-about"><a href="/about/" title="About">About</a></li>
+  </ul>
+  <div class="powerdby">
+    Powered by <a href="https://gohugo.io/">Hugo</a> and <a href="https://github.com/taikii/whiteplain">Whiteplain</a>
+  </div>
+</div>
+
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-P5EZCXRPMM"></script>
+      <script>
+        var doNotTrack = false;
+        if ( true ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-P5EZCXRPMM');
+        }
+      </script>
+
+</body>
+</html>
