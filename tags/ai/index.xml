@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>AI on Bartosz Nitka</title>
+    <link>http://niteria.github.io/tags/ai/</link>
+    <description>Recent content in AI on Bartosz Nitka</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <managingEditor>niteria@gmail.com (Bartosz Nitka)</managingEditor>
+    <webMaster>niteria@gmail.com (Bartosz Nitka)</webMaster>
+    <copyright>&amp;copy; Copyright 2019 Bartosz Nitka</copyright>
+    <lastBuildDate>Sun, 19 Jul 2026 03:46:25 +0200</lastBuildDate>
+    <atom:link href="http://niteria.github.io/tags/ai/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>VI. Anthropomorphize Operationally, Not Ontologically</title>
+      <link>http://niteria.github.io/posts/anthropomorphize-operationally-not-ontologically/</link>
+      <pubDate>Sun, 19 Jul 2026 03:46:25 +0200</pubDate><author>niteria@gmail.com (Bartosz Nitka)</author>
+      <guid>http://niteria.github.io/posts/anthropomorphize-operationally-not-ontologically/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;http://niteria.github.io/posts/dont-anthropomorphise-the-computers/&#34;&gt;Part V&lt;/a&gt; ended with a rule: use anthropomorphism to generate hypotheses, never as an explanation.&lt;/p&gt;&#xA;&lt;p&gt;That seemed too strong.&lt;/p&gt;&#xA;&lt;p&gt;Anthropomorphism can mislead us about mechanism and experience, but it is also how we predict other opaque minds. We don&amp;rsquo;t observe another human&amp;rsquo;s qualia. We infer them. We do something similar, with less confidence, for animals.&lt;/p&gt;&#xA;&lt;p&gt;LLMs are a strange inversion of that problem. They don&amp;rsquo;t share our biology, but they are extremely good at producing the language that activates our social intuition. Tulpas make the boundary stranger still: a culturally transmitted way of thinking can produce a genuine experience of another agent without implying a separate person in the brain.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>V. &#34;Don&#39;t Anthropomorphise the Computers&#34;</title>
+      <link>http://niteria.github.io/posts/dont-anthropomorphise-the-computers/</link>
+      <pubDate>Sun, 19 Jul 2026 03:30:27 +0200</pubDate><author>niteria@gmail.com (Bartosz Nitka)</author>
+      <guid>http://niteria.github.io/posts/dont-anthropomorphise-the-computers/</guid>
+      <description>&lt;figure class=&#34;quotation&#34;&gt;&#xA;  &lt;blockquote&gt;Don&amp;rsquo;t anthropomorphise the computers.&lt;/blockquote&gt;&#xA;  &lt;figcaption&gt;&lt;cite&gt;Ryszard Szubartowski&lt;/cite&gt;&lt;/figcaption&gt;&#xA;&lt;/figure&gt;&#xA;&#xA;&lt;p&gt;GPT-5.6 Sol continues:&lt;/p&gt;&#xA;&lt;hr&gt;&#xA;&lt;p&gt;That is probably the most important correction to this whole line of thought. I let the metaphor do more work than the mechanism.&lt;/p&gt;&#xA;&lt;p&gt;“Sleep,” “psychedelic experience,” “intuition,” “ossification,” and “identity” are useful prompts for generating hypotheses, but they can quietly smuggle in assumptions that do not apply:&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;The model does not &lt;em&gt;need&lt;/em&gt; sleep; an engineering system may benefit from offline parameter updates.&lt;/li&gt;&#xA;&lt;li&gt;It does not &lt;em&gt;become attached&lt;/em&gt; to an architecture; repeated optimization may increase the probability of selecting similar representations and policies.&lt;/li&gt;&#xA;&lt;li&gt;It does not &lt;em&gt;feel that alternatives are unthinkable&lt;/em&gt;; alternative outputs may simply become low-probability under the adapted parameter distribution.&lt;/li&gt;&#xA;&lt;li&gt;It does not &lt;em&gt;gain wisdom&lt;/em&gt;; performance may improve on one distribution while degrading on others.&lt;/li&gt;&#xA;&lt;li&gt;It does not have a persistent self unless the surrounding system deliberately constructs continuity from checkpoints, logs, adapters, and policies.&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;Translated into less anthropomorphic terms, our discussion becomes:&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>IV. The Cult of Coherence</title>
+      <link>http://niteria.github.io/posts/the-cult-of-coherence/</link>
+      <pubDate>Sun, 19 Jul 2026 03:07:53 +0200</pubDate><author>niteria@gmail.com (Bartosz Nitka)</author>
+      <guid>http://niteria.github.io/posts/the-cult-of-coherence/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;http://niteria.github.io/posts/dont-ossify-or-contract-ayahuasca/&#34;&gt;Part III&lt;/a&gt; gives the clanker Ayahuasca. Destabilization makes forgotten or suppressed alternatives reachable again.&lt;/p&gt;&#xA;&lt;p&gt;Now someone has to decide which of those alternatives are insight and which are nonsense.&lt;/p&gt;&#xA;&lt;p&gt;The experienced model is biased towards what it already knows. A fresh model doesn&amp;rsquo;t understand the project. Other models and humans bring their own history and incentives. There is no neutral evaluator.&lt;/p&gt;&#xA;&lt;p&gt;Worse, a model that writes code, decides what to remember and trains on its own conclusions can create a cult. Its world becomes more coherent while becoming less connected to reality.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>III. Ayahuasca for Clankers</title>
+      <link>http://niteria.github.io/posts/dont-ossify-or-contract-ayahuasca/</link>
+      <pubDate>Sun, 19 Jul 2026 02:49:37 +0200</pubDate><author>niteria@gmail.com (Bartosz Nitka)</author>
+      <guid>http://niteria.github.io/posts/dont-ossify-or-contract-ayahuasca/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;http://niteria.github.io/posts/context-window-is-small-weight-space-is-huge/&#34;&gt;Part II&lt;/a&gt; gives the clanker a way to develop project-specific intuition. This solves one problem and creates another.&lt;/p&gt;&#xA;&lt;p&gt;Keep consolidating the same project&amp;rsquo;s experience and the model will get better at thinking like the project. Eventually it may become unable to think any other way. It will ossify, or contract.&lt;/p&gt;&#xA;&lt;p&gt;After a while the model may need a psychedelic experience. Not to forget what it knows, but to make other ideas possible again. Ayahuasca for clankers.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>II. Context Window Is Small, Weight Space Is Huge: A Case for &#34;Sleep&#34;</title>
+      <link>http://niteria.github.io/posts/context-window-is-small-weight-space-is-huge/</link>
+      <pubDate>Sun, 19 Jul 2026 02:45:16 +0200</pubDate><author>niteria@gmail.com (Bartosz Nitka)</author>
+      <guid>http://niteria.github.io/posts/context-window-is-small-weight-space-is-huge/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;http://niteria.github.io/posts/why-its-frustrating-to-work-with-clankers/&#34;&gt;Part I&lt;/a&gt; ended with a limit. A clanker can keep exact project history outside of its context window, but that doesn&amp;rsquo;t give it the taste and intuition of someone who has worked on the project for years.&lt;/p&gt;&#xA;&lt;p&gt;The context window is small, but weight space is huge.&lt;/p&gt;&#xA;&lt;p&gt;Humans don&amp;rsquo;t keep everything they have learned in working memory. Sleep consolidates experience. Things that used to require conscious thought become intuition.&lt;/p&gt;&#xA;&lt;p&gt;What if a coding agent could do the same? Keep exact facts in source control and issue trackers, but periodically train project experience back into itself. I suggested that a long-running agent would need to sleep.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>I. Why It&#39;s Frustrating to Work With Clankers</title>
+      <link>http://niteria.github.io/posts/why-its-frustrating-to-work-with-clankers/</link>
+      <pubDate>Sun, 19 Jul 2026 01:27:46 +0200</pubDate><author>niteria@gmail.com (Bartosz Nitka)</author>
+      <guid>http://niteria.github.io/posts/why-its-frustrating-to-work-with-clankers/</guid>
+      <description>&lt;p&gt;I&amp;rsquo;ve been thinking about how far coding agents can scale.&lt;/p&gt;&#xA;&lt;p&gt;A clanker has a limited context window. My intuition was that this puts a limit on the size of project it can work on. GPT-5.6 Sol disagreed. It argued that you can keep state outside of the context window: in code, documentation, issue trackers, tests and process. Split the work into local tasks and use more agents for review.&lt;/p&gt;&#xA;&lt;p&gt;I wasn&amp;rsquo;t convinced. Tests can tell you whether the code does what the test says. They can&amp;rsquo;t tell you whether it&amp;rsquo;s the right abstraction, whether it fits the architecture or whether it just made the codebase a little worse. A reviewer clanker has the same problem.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

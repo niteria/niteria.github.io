@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>IV. The Cult of Coherence - Bartosz Nitka</title>
+  <meta property="og:title" content="IV. The Cult of Coherence - Bartosz Nitka" />
+  <meta name="twitter:title" content="IV. The Cult of Coherence - Bartosz Nitka" />
+  <meta name="description" content="Part III gives the clanker Ayahuasca. Destabilization makes forgotten or suppressed alternatives reachable again.
+Now someone has to decide which of those alternatives are insight and which are nonsense.
+The experienced model is biased towards what it already knows. A fresh model doesn&rsquo;t understand the project. Other models and humans bring their own history and incentives. There is no neutral evaluator.
+Worse, a model that writes code, decides what to remember and trains on its own conclusions can create a cult. Its world becomes more coherent while becoming less connected to reality.">
+  <meta property="og:description" content="Part III gives the clanker Ayahuasca. Destabilization makes forgotten or suppressed alternatives reachable again.
+Now someone has to decide which of those alternatives are insight and which are nonsense.
+The experienced model is biased towards what it already knows. A fresh model doesn&rsquo;t understand the project. Other models and humans bring their own history and incentives. There is no neutral evaluator.
+Worse, a model that writes code, decides what to remember and trains on its own conclusions can create a cult. Its world becomes more coherent while becoming less connected to reality.">
+  <meta name="twitter:description" content="Part III gives the clanker Ayahuasca. Destabilization makes forgotten or suppressed alternatives reachable again.
+Now someone has to decide which of those alternatives are insight and which are …">
+  <meta name="author" content="Bartosz Nitka"/>
+  <meta property="og:site_name" content="Bartosz Nitka" />
+  <meta property="og:url" content="http://niteria.github.io/posts/the-cult-of-coherence/" />
+  <meta property="og:type" content="article" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="generator" content="Hugo 0.158.0">
+  <link rel="stylesheet" href="/css/style.css" media="all" />
+
+  <link rel="stylesheet" href="/css/syntax.css" media="all" />
+  <link rel="stylesheet" href="/css/custom.css" media="all" />
+
+  <script src="/js/script.js"></script>
+  <script src="/js/custom.js"></script>
+  <script defer src="/fontawesome/all.min.js"></script>
+</head>
+
+<body>
+
+<header class="site-header">
+  <nav class="site-navi">
+    <h1 class="site-title"><a href="/">Bartosz Nitka</a></h1>
+    <ul class="site-navi-items">
+      <li class="site-navi-item-archives"><a href="/archives/" title="Archives">Archives</a></li>
+      <li class="site-navi-item-about"><a href="/about/" title="About">About</a></li>
+    </ul>
+  </nav>
+</header>
+<hr class="site-header-bottom">
+
+  <div class="main" role="main">
+    <article class="article">
+      
+      <p class="article-title-series"><a href="/series/coding-agents-and-limits/">Coding Agents and Limits</a>&nbsp;/</p>
+      <h1 class="article-title">IV. The Cult of Coherence</h1>
+      
+      <hr class="article-title-bottom">
+      <ul class="article-meta">
+        <li class="article-meta-date"><time>July 19, 2026</time></li>
+        <li class="article-meta-tags">
+          <a href="/tags/ai/">
+            <i class="fa-solid fa-tag"></i>
+            AI
+          </a>&nbsp;
+        </li>
+        <li class="article-meta-tags">
+          <a href="/tags/software-engineering/">
+            <i class="fa-solid fa-tag"></i>
+            software-engineering
+          </a>&nbsp;
+        </li>
+      </ul>
+      
+<aside class="toc">
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#the-evaluator-cannot-be-neutral">The evaluator cannot be neutral</a></li>
+    <li><a href="#architecture-is-a-prediction-not-a-visible-property">Architecture is a prediction, not a visible property</a></li>
+    <li><a href="#the-system-must-preserve-counterfactuals">The system must preserve counterfactuals</a></li>
+    <li><a href="#the-real-danger-is-self-confirming-consolidation">The real danger is self-confirming consolidation</a></li>
+    <li><a href="#the-unit-of-intelligence-changes">The unit of intelligence changes</a></li>
+    <li><a href="#the-next-objective-is-not-permanent-coherence">The next objective is not permanent coherence</a></li>
+    <li><a href="#so-the-next-insight-is-this">So the next insight is this</a></li>
+  </ul>
+</nav>
+</aside>
+      <p><a href="http://niteria.github.io/posts/dont-ossify-or-contract-ayahuasca/">Part III</a> gives the clanker Ayahuasca. Destabilization makes forgotten or suppressed alternatives reachable again.</p>
+<p>Now someone has to decide which of those alternatives are insight and which are nonsense.</p>
+<p>The experienced model is biased towards what it already knows. A fresh model doesn&rsquo;t understand the project. Other models and humans bring their own history and incentives. There is no neutral evaluator.</p>
+<p>Worse, a model that writes code, decides what to remember and trains on its own conclusions can create a cult. Its world becomes more coherent while becoming less connected to reality.</p>
+<p>GPT-5.6 Sol took the argument from memory and learning to governance:</p>
+<hr>
+<p>The next thing to notice is the <strong>selection problem</strong>.</p>
+<p>You started with:</p>
+<blockquote>
+<p><strong>small context</strong> → <strong>forgetting</strong></p>
+</blockquote>
+<p>Then:</p>
+<blockquote>
+<p><strong>sleep/consolidation</strong> → <strong>durable project intuition</strong></p>
+</blockquote>
+<p>Then:</p>
+<blockquote>
+<p><strong>durable intuition</strong> → <strong>contraction and ossification</strong></p>
+</blockquote>
+<p>Then:</p>
+<blockquote>
+<p><strong>destabilization</strong> → <strong>new possibilities</strong></p>
+</blockquote>
+<p>But now you have a harder problem:</p>
+<blockquote>
+<p>Which of the new possibilities are insight, and which are merely incoherence?</p>
+</blockquote>
+<p>Sleep gives persistence.</p>
+<p>The psychedelic phase gives variation.</p>
+<p>Neither gives selection.</p>
+<h2 id="the-evaluator-cannot-be-neutral">The evaluator cannot be neutral</h2>
+<p>Suppose the experienced model judges the alternatives. It will tend to reject precisely those ideas that violate its ossified worldview.</p>
+<p>Suppose a fresh model judges them. It lacks the accumulated project understanding needed to distinguish a deep simplification from a naïve rewrite.</p>
+<p>Suppose another specialized model judges them. It has its own contraction.</p>
+<p>Suppose humans judge them. Humans have the same bounded context, institutional habits, incentives, and delayed understanding.</p>
+<p>So every evaluator is situated. There is no view from nowhere from which “proper architecture” can simply be recognized.</p>
+<p>This produces a recursion:</p>
+<ul>
+<li>the model needs sleep;</li>
+<li>the sleep process needs a curator;</li>
+<li>the curator needs protection from ossification;</li>
+<li>that protection needs an evaluator;</li>
+<li>the evaluator itself needs evaluation.</li>
+</ul>
+<p>The mistake would be to search for a final component that ends the recursion. There probably is no such component.</p>
+<h2 id="architecture-is-a-prediction-not-a-visible-property">Architecture is a prediction, not a visible property</h2>
+<p>A deeper point follows from your earlier objection about taste.</p>
+<p>You cannot fully determine whether an architecture is good by inspecting it at the moment it is written. Architecture is largely a <strong>wager about future change</strong>.</p>
+<p>A boundary is good if future changes tend to remain localized around it.</p>
+<p>An abstraction is good if future cases extend it naturally.</p>
+<p>Duplication is justified if the supposedly similar things later diverge.</p>
+<p>A generalization is justified if the anticipated variation actually appears.</p>
+<p>Therefore:</p>
+<blockquote>
+<p>“This is the right architecture” really means “this conceptual structure will continue to compress the changes this system is likely to undergo.”</p>
+</blockquote>
+<p>But the evidence arrives months or years later.</p>
+<p>This means the core learning problem is not memory capacity. It is <strong>long-horizon credit assignment</strong>. When a project becomes painful in 2029, which design decision from 2026 deserves blame? When an abstraction works beautifully, was that because it captured the domain correctly, or because the project happened not to encounter the cases that would break it?</p>
+<p>The model cannot know what to consolidate merely by training on accepted pull requests. Acceptance is not the same as correctness. It may simply encode the current maintainers’ taste, schedule pressure, or institutional politics.</p>
+<h2 id="the-system-must-preserve-counterfactuals">The system must preserve counterfactuals</h2>
+<p>Ordinary project memory records what was chosen:</p>
+<blockquote>
+<p>We adopted architecture A.</p>
+</blockquote>
+<p>A learning system needs more:</p>
+<blockquote>
+<p>We chose A over B and C.</p>
+<p>We expected A to make changes of type X easier.</p>
+<p>We accepted increased difficulty for Y because Y was believed to be rare.</p>
+<p>B was rejected because of assumption Z.</p>
+<p>Reconsider B if Z stops being true.</p>
+</blockquote>
+<p>That is <strong>counterfactual memory</strong>.</p>
+<p>Without it, sleep reinforces the winners and erases the alternatives. The model learns history as inevitability:</p>
+<blockquote>
+<p>A exists, therefore A must have been right.</p>
+</blockquote>
+<p>With counterfactual memory, later experience can revise the judgment:</p>
+<blockquote>
+<p>We expected X, but the project repeatedly encountered Y. The rejected design B may have modeled the domain better.</p>
+</blockquote>
+<p>This is how taste could become more than imitation. The model would learn not just from what maintainers approved, but from whether their predictions survived contact with the project’s future.</p>
+<p>For agentic coding, decision records should therefore contain predictions, not just rationales:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Decision:
+</span></span><span style="display:flex;"><span>Place authorization at the service boundary.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Expected benefit:
+</span></span><span style="display:flex;"><span>New transports should reuse identical authorization behavior.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Accepted cost:
+</span></span><span style="display:flex;"><span>Service methods will require explicit actor context.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Prediction:
+</span></span><span style="display:flex;"><span>Adding a second transport should require no authorization duplication.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Revisit when:
+</span></span><span style="display:flex;"><span>Transport-specific authorization rules become common.
+</span></span></code></pre></div><p>Later, the sleep process can compare the prediction with what actually happened.</p>
+<h2 id="the-real-danger-is-self-confirming-consolidation">The real danger is self-confirming consolidation</h2>
+<p>A model that produces code, approves its own code, summarizes its own history, and trains on that history forms a closed epistemic loop.</p>
+<p>Its outputs become its training data.</p>
+<p>Its assumptions determine which evidence is retained.</p>
+<p>Its retained evidence strengthens those assumptions.</p>
+<p>It can become increasingly coherent while becoming less connected to reality.</p>
+<p>That is more dangerous than ordinary forgetting. Forgetting creates visible inconsistency. Self-confirming consolidation creates an internally consistent world that explains away contrary evidence.</p>
+<p>So no long-lived model should simultaneously control:</p>
+<ol>
+<li>what actions are taken;</li>
+<li>what experiences are remembered;</li>
+<li>what lessons are extracted;</li>
+<li>what evaluation criteria are used;</li>
+<li>whether its own update is accepted.</li>
+</ol>
+<p>This is not primarily a neural-network design principle. It is a constitutional principle: <strong>separation of powers</strong>.</p>
+<h2 id="the-unit-of-intelligence-changes">The unit of intelligence changes</h2>
+<p>At this point the single model ceases to be the correct unit.</p>
+<p>The durable system needs at least:</p>
+<ul>
+<li>an incumbent that carries accumulated project intuition;</li>
+<li>an archive that preserves exact events and rejected alternatives;</li>
+<li>independent challengers that did not inherit all incumbent adaptations;</li>
+<li>experimental branches that test competing theories;</li>
+<li>evaluators with different histories and incentives;</li>
+<li>external consequences that no model can redefine;</li>
+<li>versioned updates that can be reversed.</li>
+</ul>
+<p>The intelligence lies in the interaction among them.</p>
+<p>This resembles science more than memory:</p>
+<ul>
+<li>competing models are maintained;</li>
+<li>predictions are recorded;</li>
+<li>experiments distinguish them;</li>
+<li>anomalies remain visible;</li>
+<li>theories are revised retrospectively;</li>
+<li>no theory is permitted to rewrite the historical evidence that counted against it.</li>
+</ul>
+<p>It also resembles constitutional government: no participant is trusted enough to exercise every cognitive function.</p>
+<h2 id="the-next-objective-is-not-permanent-coherence">The next objective is not permanent coherence</h2>
+<p>You began by wanting arbitrary project scale without losing coherence. The more realistic target is different:</p>
+<blockquote>
+<p>Do not prevent all drift. Make drift observable, contestable, and reversible.</p>
+</blockquote>
+<p>Perfect global coherence across unlimited time may be the wrong objective. A system too strongly optimized for coherence becomes doctrinaire. A system too strongly optimized for novelty becomes fragmented.</p>
+<p>The desired property is <strong>recoverable coherence</strong>:</p>
+<ul>
+<li>it can specialize without permanently closing alternatives;</li>
+<li>it can destabilize without destroying accumulated competence;</li>
+<li>it can make commitments without treating them as eternal truths;</li>
+<li>it can preserve minority hypotheses;</li>
+<li>it can discover retrospectively that its former taste was wrong;</li>
+<li>it can branch rather than forcing every contradiction into one identity.</li>
+</ul>
+<p>There may be no final healthy equilibrium. Health may be the continuing dynamic:</p>
+<blockquote>
+<p><strong>commitment</strong> ↔ <strong>doubt</strong></p>
+</blockquote>
+<blockquote>
+<p><strong>specialization</strong> ↔ <strong>renewal</strong></p>
+</blockquote>
+<blockquote>
+<p><strong>continuity</strong> ↔ <strong>replacement</strong></p>
+</blockquote>
+<h2 id="so-the-next-insight-is-this">So the next insight is this</h2>
+<p>The problem is no longer “How do we give a model enough memory?”</p>
+<p>It becomes:</p>
+<blockquote>
+<p>How do we construct a process in which no model—including the most experienced one—gets to define reality solely through the consequences of its own learning?</p>
+</blockquote>
+<p>Sleep writes the priors.</p>
+<p>Destabilization expands the hypotheses.</p>
+<p>But only plural evaluation, preserved counterfactuals, delayed consequences, and reversible selection can prevent the whole cycle from becoming self-confirming.</p>
+<p>And the step after that is more uncomfortable:</p>
+<blockquote>
+<p>Some valuable knowledge can be retained only by preserving disagreement rather than resolving it.</p>
+</blockquote>
+<p>A mature intelligence may not converge to one perfectly consolidated mind. It may need to remain a managed plurality whose parts remember different possible interpretations of its history.</p>
+
+    </article>
+    <section class="article-series">
+      <h2 class="series-title"><a href="/series/coding-agents-and-limits/"><i class="fa-solid fa-book"></i>&nbsp;Coding Agents and Limits</a></h2>
+      <ol reversed="reversed" class="series">
+      </ol>
+    </section>
+
+    
+
+
+    <ul class="pager article-pager">
+      <li class="pager-newer">
+          <a href="/posts/dont-anthropomorphise-the-computers/" data-toggle="tooltip" data-placement="top" title="V. &#34;Don&#39;t Anthropomorphise the Computers&#34;">&lt; Newer</a>
+      </li>
+      <li class="pager-older">
+        <a href="/posts/dont-ossify-or-contract-ayahuasca/" data-toggle="tooltip" data-placement="top" title="III. Ayahuasca for Clankers">Older &gt;</a>
+      </li>
+    </ul>
+  </div>
+
+
+<div class="site-footer">
+  <div class="copyright">&copy; Copyright 2019 Bartosz Nitka</div>
+  <ul class="site-footer-items">
+    <li class="site-footer-item-about"><a href="/about/" title="About">About</a></li>
+  </ul>
+  <div class="powerdby">
+    Powered by <a href="https://gohugo.io/">Hugo</a> and <a href="https://github.com/taikii/whiteplain">Whiteplain</a>
+  </div>
+</div>
+
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-P5EZCXRPMM"></script>
+      <script>
+        var doNotTrack = false;
+        if ( true ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-P5EZCXRPMM');
+        }
+      </script>
+
+</body>
+</html>

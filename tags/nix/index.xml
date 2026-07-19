@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Nix on Bartosz Nitka</title>
+    <link>http://niteria.github.io/tags/nix/</link>
+    <description>Recent content in Nix on Bartosz Nitka</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <managingEditor>niteria@gmail.com (Bartosz Nitka)</managingEditor>
+    <webMaster>niteria@gmail.com (Bartosz Nitka)</webMaster>
+    <copyright>&amp;copy; Copyright 2019 Bartosz Nitka</copyright>
+    <lastBuildDate>Tue, 02 Jun 2020 14:58:10 +0200</lastBuildDate>
+    <atom:link href="http://niteria.github.io/tags/nix/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Nix Notes: Overriding Haskell Packages</title>
+      <link>http://niteria.github.io/posts/nix-notes-overriding-haskell-packages/</link>
+      <pubDate>Tue, 02 Jun 2020 14:58:10 +0200</pubDate><author>niteria@gmail.com (Bartosz Nitka)</author>
+      <guid>http://niteria.github.io/posts/nix-notes-overriding-haskell-packages/</guid>
+      <description>&lt;h1 id=&#34;setup&#34;&gt;Setup&lt;/h1&gt;&#xA;&lt;p&gt;In one of the projects, I use a pinned version of nixpkgs based on &lt;a href=&#34;https://github.com/dmjio/miso&#34;&gt;&lt;code&gt;miso&lt;/code&gt;&lt;/a&gt;.&#xA;There are two advantages to that, one is that I know that &lt;code&gt;miso&lt;/code&gt; builds with that version,&#xA;and the second one is that I can take advantage of &lt;a href=&#34;https://github.com/dmjio/miso#begin&#34;&gt;&lt;code&gt;miso&lt;/code&gt;&amp;rsquo;s &lt;code&gt;cachix&lt;/code&gt; cache&lt;/a&gt; and not compile everything from scratch.&lt;/p&gt;&#xA;&lt;p&gt;In the most basic form, it looks like this.&lt;/p&gt;&#xA;&lt;p&gt;File &lt;code&gt;nixpkgs.nix&lt;/code&gt;:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;let&#xA;&#xA;  bootstrap = import &amp;lt;nixpkgs&amp;gt; {};&#xA;&#xA;  misoTarball = bootstrap.fetchFromGitHub {&#xA;    owner = &amp;#34;dmjio&amp;#34;;&#xA;    repo = &amp;#34;miso&amp;#34;;&#xA;    rev = &amp;#34;2c193a3253216d70f0ac182fbe9c801de00363ae&amp;#34;;&#xA;    sha256 = &amp;#34;1ywksdzcfd339x1hxp5pvkgbv9mdy1y0971k8v161hg33na2p8wz&amp;#34;;&#xA;  };&#xA;&#xA;  miso = import &amp;#34;${misoTarball}&amp;#34; { } ;&#xA;&#xA;  inherit (miso) pkgs;&#xA;&#xA;in miso.pkgs&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;I can then use it in another file to compile my local Haskell package named &lt;code&gt;automation-server&lt;/code&gt;.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
