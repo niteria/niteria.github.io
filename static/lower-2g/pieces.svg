@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 262" role="img" aria-labelledby="t d">
+  <title id="t">What one object file turns into below 2 GB</title>
+  <desc id="d">The object file is drawn as a row of blocks: a big block of symbols, names and relocations, then code, constants, data and a few small sections. The whole file is mapped above 2 GB, and the block of symbols, names and relocations is only needed while linking. Below it, the address space under 2 GB is drawn as a bar. In it are a table that the linker adds, with 16 bytes for every symbol, then the code, then a single 4 KB page that small sections are copied into, then a piece of the old object, which is still loaded, then the constants and the data, and then free space. Each piece goes to the lowest address where it fits, so the pieces of one object do not have to be next to each other.</desc>
+  <defs>
+    <style>
+      text { font-family: system-ui, -apple-system, "Segoe UI", "Helvetica Neue", sans-serif; font-size: 14px; fill: #52514e; }
+      .title { font-size: 16px; font-weight: 600; fill: #0b0b0b; }
+      .ink { fill: #0b0b0b; }
+      .strong { font-weight: 600; }
+      .end { text-anchor: end; }
+      .note { font-size: 12.5px; }
+      .new { fill: #256abf; }
+      .old { fill: #b5d0f5; }
+      .other { fill: #f0efec; }
+      .page { fill: #0b0b0b; }
+      .in { fill: #ffffff; font-weight: 600; text-anchor: middle; }
+      .inother { text-anchor: middle; }
+    </style>
+  </defs>
+
+  <!-- the file -->
+  <text class="title" x="20" y="22">The object file</text>
+  <text class="end" x="540" y="22">the whole file is mapped above 2 GB</text>
+  <rect class="other" x="21" y="34" width="244" height="36" rx="3"/>
+  <rect class="new" x="267" y="34" width="96" height="36" rx="3"/>
+  <rect class="new" x="365" y="34" width="84" height="36" rx="3"/>
+  <rect class="new" x="451" y="34" width="58" height="36" rx="3"/>
+  <rect class="new" x="511" y="34" width="8" height="36" rx="2"/>
+  <rect class="new" x="521" y="34" width="8" height="36" rx="2"/>
+  <rect class="new" x="531" y="34" width="8" height="36" rx="2"/>
+  <text class="inother" x="143" y="57">symbols, names, relocations</text>
+  <text class="in" x="315" y="57">code</text>
+  <text class="in" x="407" y="57">constants</text>
+  <text class="in" x="480" y="57">data</text>
+  <text class="note" x="21" y="88">only needed while linking</text>
+  <text class="note end" x="539" y="88">small sections</text>
+
+  <!-- below 2 GB -->
+  <text class="title" x="20" y="128">Below 2 GB</text>
+  <text class="end" x="540" y="128">each piece goes to the lowest address where it fits</text>
+  <rect class="other" x="21" y="140" width="518" height="36" rx="3"/>
+  <rect class="new" x="21" y="140" width="52" height="36" rx="3"/>
+  <rect class="new" x="75" y="140" width="96" height="36" rx="3"/>
+  <rect class="page" x="174" y="136" width="3" height="44"/>
+  <rect class="old" x="181" y="140" width="84" height="36" rx="3"/>
+  <rect class="new" x="267" y="140" width="84" height="36" rx="3"/>
+  <rect class="new" x="353" y="140" width="58" height="36" rx="3"/>
+  <text class="in" x="47" y="163">table</text>
+  <text class="in" x="123" y="163">code</text>
+  <text class="in" x="309" y="163">constants</text>
+  <text class="in" x="382" y="163">data</text>
+  <text class="inother" x="475" y="163">free</text>
+
+  <!-- what the three new things are -->
+  <rect class="new" x="21" y="195" width="14" height="11" rx="2"/>
+  <text class="ink" x="44" y="205"><tspan class="strong">table:</tspan> added by the linker, 16 bytes for every symbol</text>
+  <rect class="page" x="26.5" y="213" width="3" height="19"/>
+  <text class="ink" x="44" y="227"><tspan class="strong">a 4 KB page:</tspan> small sections are copied into pages like this one</text>
+  <rect class="old" x="21" y="239" width="14" height="11" rx="2"/>
+  <text class="ink" x="44" y="249"><tspan class="strong">a piece of the old object,</tspan> which is still loaded</text>
+</svg>

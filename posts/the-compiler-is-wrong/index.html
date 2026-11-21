@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>The Compiler Is Wrong - Bartosz Nitka</title>
+  <meta property="og:title" content="The Compiler Is Wrong - Bartosz Nitka" />
+  <meta name="twitter:title" content="The Compiler Is Wrong - Bartosz Nitka" />
+  <meta name="description" content="
+  How this post was written:
+  the experience, the work and the decisions are mine. I used a clanker (a coding agent) to turn my notes, commits and memories into a cohesive story, then reviewed it for accuracy. See my series on working with clankers.
+
+
+&ldquo;It&rsquo;s never the compiler&rdquo; is a good rule.
+My first task on a new team at Facebook was the exception.
+It started with a crash in production and ended with a bug report against GCC.">
+  <meta property="og:description" content="
+  How this post was written:
+  the experience, the work and the decisions are mine. I used a clanker (a coding agent) to turn my notes, commits and memories into a cohesive story, then reviewed it for accuracy. See my series on working with clankers.
+
+
+&ldquo;It&rsquo;s never the compiler&rdquo; is a good rule.
+My first task on a new team at Facebook was the exception.
+It started with a crash in production and ended with a bug report against GCC.">
+  <meta name="twitter:description" content="
+  How this post was written:
+  the experience, the work and the decisions are mine. I used a clanker (a coding agent) to turn my notes, commits and memories into a cohesive story, then reviewed it …">
+  <meta name="author" content="Bartosz Nitka"/>
+  <meta property="og:site_name" content="Bartosz Nitka" />
+  <meta property="og:url" content="http://niteria.github.io/posts/the-compiler-is-wrong/" />
+  <meta property="og:type" content="article" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="generator" content="Hugo 0.158.0">
+  <link rel="stylesheet" href="/css/style.css" media="all" />
+
+  <link rel="stylesheet" href="/css/syntax.css" media="all" />
+  <link rel="stylesheet" href="/css/custom.css" media="all" />
+
+  <script src="/js/script.js"></script>
+  <script src="/js/custom.js"></script>
+  <script defer src="/fontawesome/all.min.js"></script>
+</head>
+
+<body>
+
+<header class="site-header">
+  <nav class="site-navi">
+    <h1 class="site-title"><a href="/">Bartosz Nitka</a></h1>
+    <ul class="site-navi-items">
+      <li class="site-navi-item-archives"><a href="/archives/" title="Archives">Archives</a></li>
+      <li class="site-navi-item-about"><a href="/about/" title="About">About</a></li>
+    </ul>
+  </nav>
+</header>
+<hr class="site-header-bottom">
+
+  <div class="main" role="main">
+    <article class="article">
+      
+      
+      <h1 class="article-title">The Compiler Is Wrong</h1>
+      
+      <hr class="article-title-bottom">
+      <ul class="article-meta">
+        <li class="article-meta-date"><time>July 19, 2026</time></li>
+        <li class="article-meta-tags">
+          <a href="/tags/gcc/">
+            <i class="fa-solid fa-tag"></i>
+            gcc
+          </a>&nbsp;
+        </li>
+        <li class="article-meta-tags">
+          <a href="/tags/debugging/">
+            <i class="fa-solid fa-tag"></i>
+            debugging
+          </a>&nbsp;
+        </li>
+        <li class="article-meta-tags">
+          <a href="/tags/software-engineering/">
+            <i class="fa-solid fa-tag"></i>
+            software-engineering
+          </a>&nbsp;
+        </li>
+      </ul>
+      
+<aside class="toc">
+  <nav id="TableOfContents"></nav>
+</aside>
+      <aside class="clanker-note" style="border-left: 3px solid #999; padding: 0.4em 0.9em; margin: 1em 0; font-size: 0.92em; color: #555;">
+  <p style="margin: 0;"><strong>How this post was written:</strong>
+  the experience, the work and the decisions are mine. I used a clanker (a coding agent) to turn my notes, commits and memories into a cohesive story, then reviewed it for accuracy. See <a href="http://niteria.github.io/posts/why-its-frustrating-to-work-with-clankers/">my series on working with clankers</a>.</p>
+</aside>
+
+<p>&ldquo;It&rsquo;s never the compiler&rdquo; is a good rule.
+My first task on a new team at Facebook was the exception.
+It started with a crash in production and ended with a bug report against GCC.</p>
+<h1 id="a-welcome-gift">A welcome gift</h1>
+<p>In late 2013 I joined the team behind <a href="https://engineering.fb.com/2015/06/26/security/fighting-spam-with-haskell/">Sigma</a>, Facebook&rsquo;s rule engine for catching spam and other abuse.
+Someone before me had tried to move the service to GCC 4.8.
+It crashed in production.
+Finding out why was my first task.</p>
+<p>That was thirteen years ago, and I have to reach deep for the details.
+I think the stack traces had <code>unique_ptr</code> at the top, with different callers below it from run to run.</p>
+<h1 id="the-last-suspect">The last suspect</h1>
+<p>When a program breaks after a compiler upgrade, the compiler is the last suspect.
+Much more often the code has undefined behaviour that the old compiler tolerated and the new optimizer takes advantage of.
+So before I could say &ldquo;the compiler is wrong&rdquo;, I had to make sure we weren&rsquo;t triggering undefined behaviour ourselves.
+You can&rsquo;t do that for a whole service.
+You can do it for a program small enough to read.</p>
+<h1 id="a-few-days-of-reducing">A few days of reducing</h1>
+<p>Getting to that small program took a few days.</p>
+<p>I started by reproducing the crash on my dev machine, replaying traffic through the full service.
+Then I started removing major subsystems, the data sources.</p>
+<p>The crash turned out to be a poor signal.
+Removing dead code, paths the replayed traffic never reached, would sometimes make it go away.
+A crash that comes and goes when you delete code that never runs looks like memory corruption in your own program.
+This was before my team used AddressSanitizer (ASAN).
+Getting it running on the service became one of my later tasks.</p>
+<p>Eventually I realized that I could bisect the compiler flags instead of the code.
+That made the code reduction a lot faster too, because my oracle, the question &ldquo;does it still crash?&rdquo;, got more accurate.
+With fewer optimizations switched on, a crash that went away much more often meant I had removed something it needed.</p>
+<p>From there it was down to making the smallest file possible, while reducing the flags in parallel.
+It ended at 48 lines and a single flag on top of <code>-O</code>: <code>-ftree-slp-vectorize</code>.</p>
+<p>That flag is GCC&rsquo;s basic block vectorizer.
+It looks for runs of similar scalar operations in straight-line code and merges them into vector instructions.
+GCC 4.8 turns it on at <code>-O3</code>.</p>
+<h1 id="48-lines">48 lines</h1>
+<p>This is the test case from my bug report:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;memory&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;iostream&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">using</span> <span style="color:#66d9ef">namespace</span> std;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Foo</span> {};
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Bar</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> Foo {};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">StlAllocator</span> {
+</span></span><span style="display:flex;"><span>  StlAllocator() <span style="color:#f92672">:</span> alloc_(<span style="color:#66d9ef">nullptr</span>) {}
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">explicit</span> <span style="color:#a6e22e">StlAllocator</span>(<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> p) <span style="color:#f92672">:</span> alloc_(p) {}
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> alloc_;
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">BarDelete</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> StlAllocator {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">operator</span>()(<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span>) <span style="color:#66d9ef">const</span> {}
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">FooDelete</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> StlAllocator {
+</span></span><span style="display:flex;"><span>  FooDelete() <span style="color:#f92672">=</span> <span style="color:#66d9ef">default</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">/* implicit */</span> FooDelete(<span style="color:#66d9ef">const</span> BarDelete<span style="color:#f92672">&amp;</span> other) <span style="color:#f92672">:</span> StlAllocator(other.alloc_)
+</span></span><span style="display:flex;"><span>    {}
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">operator</span>()(<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span>) <span style="color:#66d9ef">const</span> {}
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>unique_ptr<span style="color:#f92672">&lt;</span>Bar, BarDelete<span style="color:#f92672">&gt;</span> myalloc() {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> unique_ptr<span style="color:#f92672">&lt;</span>Bar, BarDelete<span style="color:#f92672">&gt;</span>(<span style="color:#66d9ef">new</span> Bar);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">fun</span>(<span style="color:#66d9ef">const</span> unique_ptr<span style="color:#f92672">&lt;</span>Foo, FooDelete<span style="color:#f92672">&gt;&amp;</span> foo) {
+</span></span><span style="display:flex;"><span>  cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;fun &#34;</span> <span style="color:#f92672">&lt;&lt;</span> foo.get() <span style="color:#f92672">&lt;&lt;</span> endl;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span>, <span style="color:#66d9ef">char</span> <span style="color:#f92672">**</span>) {
+</span></span><span style="display:flex;"><span>  std<span style="color:#f92672">::</span>unique_ptr<span style="color:#f92672">&lt;</span>Foo, FooDelete<span style="color:#f92672">&gt;</span> foo;
+</span></span><span style="display:flex;"><span>  std<span style="color:#f92672">::</span>unique_ptr<span style="color:#f92672">&lt;</span>Bar, BarDelete<span style="color:#f92672">&gt;</span> bar <span style="color:#f92672">=</span> myalloc();
+</span></span><span style="display:flex;"><span>  foo <span style="color:#f92672">=</span> std<span style="color:#f92672">::</span>move(bar);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">auto</span> p <span style="color:#f92672">=</span> foo.get();
+</span></span><span style="display:flex;"><span>  cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;p &#34;</span> <span style="color:#f92672">&lt;&lt;</span> p <span style="color:#f92672">&lt;&lt;</span> endl;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (p <span style="color:#f92672">!=</span> foo.get()) {
+</span></span><span style="display:flex;"><span>    cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;wtf&#34;</span> <span style="color:#f92672">&lt;&lt;</span> endl;
+</span></span><span style="display:flex;"><span>    abort();
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  fun(foo);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><pre tabindex="0"><code>$ g++ -std=c++11 -O -ftree-slp-vectorize SmallCore.cpp
+$ ./a.out
+p 0x602010
+wtf
+Aborted
+</code></pre><p>It moves a <code>unique_ptr</code> to a derived class into a <code>unique_ptr</code> to its base class.
+Then it asks <code>foo</code> for its pointer twice and compares the two answers.
+They differ.</p>
+<p>Both deleters carry a pointer.
+<code>StlAllocator</code> and <code>alloc_</code> are names from <a href="https://github.com/facebook/folly/blob/820c91a0f9cb1d5c7938a6e9394e625781919772/folly/Memory.h">folly</a>, where a deleter remembers which allocator its object came from.
+Our service used arena allocators, and its <code>unique_ptr</code>s had deleters like these.</p>
+<p>There is nothing exotic in those lines: no casts, no uninitialized memory, no aliasing tricks.
+To my eyes it had no undefined behaviour.
+I wanted more confidence than that before filing a public bug report, and the file was now small enough to show to a couple of C++ experts and ask.
+That ruled it out.</p>
+<h1 id="what-the-compiler-did">What the compiler did</h1>
+<p>A plain <code>unique_ptr</code> is 8 bytes, because its default deleter is empty.
+These are 16 bytes each: the deleter&rsquo;s pointer, then the pointer to the object.
+Moving one into the other comes down to four statements.
+This is how Richard Biener later wrote them in plain C, with <code>a</code> for <code>bar</code> and <code>b</code> for <code>foo</code> (the comments are mine):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>tem <span style="color:#f92672">=</span> a.b;    <span style="color:#75715e">// take the object pointer out of bar
+</span></span></span><span style="display:flex;"><span>a.b <span style="color:#f92672">=</span> (<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>)<span style="color:#ae81ff">0</span>;    <span style="color:#75715e">// bar gives up ownership
+</span></span></span><span style="display:flex;"><span>b.b <span style="color:#f92672">=</span> tem;          <span style="color:#75715e">// foo gets the object pointer
+</span></span></span><span style="display:flex;"><span>b.a <span style="color:#f92672">=</span> a.a;          <span style="color:#75715e">// foo gets the deleter
+</span></span></span></code></pre></div><p>The vectorizer saw two 8-byte copies between neighbouring fields and merged them into one 16-byte copy.
+It put the 16-byte read after the write that empties <code>bar</code>.
+This is what GCC 4.8.5 generates for the C++ test case:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-asm" data-lang="asm"><span style="display:flex;"><span><span style="color:#a6e22e">mov</span>    <span style="color:#ae81ff">0x18</span>(%rsp),%rbx     <span style="color:#75715e"># rbx = bar&#39;s object pointer
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">movq</span>   <span style="color:#66d9ef">$0x0</span>,<span style="color:#ae81ff">0x18</span>(%rsp)     <span style="color:#75715e"># bar&#39;s object pointer = null
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">movdqa</span> <span style="color:#ae81ff">0x10</span>(%rsp),%xmm0    <span style="color:#75715e"># read 16 bytes of bar; its pointer is already null
+</span></span></span><span style="display:flex;"><span><span style="color:#a6e22e">movdqa</span> %xmm0,(%rsp)        <span style="color:#75715e"># write 16 bytes to foo
+</span></span></span></code></pre></div><p><code>foo</code> now owns a null pointer, and the real one survives only in a register.
+That explains the strange output.
+The first <code>foo.get()</code> prints the right address, because the compiler answers it from the register.
+The second is read back from memory, and it&rsquo;s null.
+In a real program that is a <code>unique_ptr</code> that looks fine where it&rsquo;s moved and is null wherever it&rsquo;s used next.</p>
+<h1 id="thirteen-hours">Thirteen hours</h1>
+<p>I filed <a href="https://gcc.gnu.org/bugzilla/show_bug.cgi?id=59374">GCC bug 59374</a> on Monday, December 2, 2013, at 4:02 in the afternoon in Menlo Park.
+The test case failed on GCC 4.8.1 and on a fresh build of trunk.</p>
+<p>Nine hours later Richard Biener confirmed it.
+Two hours after that he posted the code before and after the vectorizer and wrote: &ldquo;obvious violating a WAR dependency. I&rsquo;m sure it was me who broke this.&rdquo;
+WAR is write-after-read: the write that empties <code>bar</code> has to stay after the read.
+Seven minutes later he had the same failure in 20 lines of plain C.
+A little over an hour later he attached a patch.</p>
+<p>That&rsquo;s thirteen hours from my report to a patch.
+It was there at five the next morning, my time, and in GCC&rsquo;s trunk two days after that.</p>
+<h1 id="older-than-it-looked">Older than it looked</h1>
+<p>In January Richard came back to the bug.
+He wrote that backporting the fix to 4.8 would be hard, and that it wasn&rsquo;t complete.
+He had found another way to trigger the miscompile, and committed a second fix with the comment &ldquo;Now hopefully really fixed on trunk ;)&rdquo;.</p>
+<p>Jakub Jelinek bisected the C test case to a change from September 2010.
+The bug page lists GCC 4.6.4, 4.7.3 and 4.8.5 as failing, so the faulty check went out in three release series.
+My C++ test case passed on GCC 4.7.1 and failed on 4.8.1.</p>
+<p>The fix shipped in GCC 4.9.0 in April 2014.
+At Facebook another team, one closer to build support, backported the patch to GCC 4.8, and we eventually migrated to a newer version.</p>
+<p>Upstream, the fix never reached the 4.8 branch.
+The following July someone else filed <a href="https://gcc.gnu.org/bugzilla/show_bug.cgi?id=61863">&ldquo;Data corruption when creating temporary object&rdquo;</a> about a move constructor under GCC 4.8.
+It was the same bug.</p>
+<p>While writing this post I had a clanker fetch GCC 4.8.5, the last 4.8 release, from the Nix binary cache and compile the test case again.
+It still prints <code>wtf</code>:</p>
+<pre tabindex="0"><code>$ nix shell --impure --expr &#39;(import (fetchTarball
+    &#34;https://github.com/NixOS/nixpkgs/archive/nixos-19.09.tar.gz&#34;)
+    { system = &#34;x86_64-linux&#34;; }).gcc48&#39; \
+    -c g++ -std=c++11 -O -ftree-slp-vectorize SmallCore.cpp
+$ ./a.out
+p 0x3a0a1260
+wtf
+Aborted (core dumped)
+</code></pre><p>GCC 4.9.4 gets it right.</p>
+<p>That run also showed my unreliable oracle in miniature.
+The 48 lines fail with <code>-O -ftree-slp-vectorize</code> and pass at <code>-O3</code>, where the vectorizer runs too.
+At <code>-O2</code> and above GCC inlines <code>myalloc</code>, <code>bar</code> never exists in memory, and there are no copies left to merge.
+An optimization that has nothing to do with the bug decides whether it shows.</p>
+<h1 id="still-in-the-test-suite">Still in the test suite</h1>
+<p>Richard&rsquo;s reductions of the crash are still in GCC, as three files in its test suite: <a href="https://github.com/gcc-mirror/gcc/blob/master/gcc/testsuite/gcc.dg/torture/pr59374-1.c"><code>pr59374-1.c</code></a>, <a href="https://github.com/gcc-mirror/gcc/blob/master/gcc/testsuite/gcc.dg/torture/pr59374-2.c"><code>pr59374-2.c</code></a> and <a href="https://github.com/gcc-mirror/gcc/blob/master/gcc/testsuite/gcc.dg/torture/pr59374-3.c"><code>pr59374-3.c</code></a>.</p>
+<p>Nice welcome gift.</p>
+    </article>
+
+    
+
+
+    <ul class="pager article-pager">
+      <li class="pager-newer">
+          <a href="/posts/everything-was-const/" data-toggle="tooltip" data-placement="top" title="Everything Was Const">&lt; Newer</a>
+      </li>
+      <li class="pager-older">
+        <a href="/posts/anthropomorphize-operationally-not-ontologically/" data-toggle="tooltip" data-placement="top" title="VI. Anthropomorphize Operationally, Not Ontologically">Older &gt;</a>
+      </li>
+    </ul>
+  </div>
+
+
+<div class="site-footer">
+  <div class="copyright">&copy; Copyright 2019 Bartosz Nitka</div>
+  <ul class="site-footer-items">
+    <li class="site-footer-item-about"><a href="/about/" title="About">About</a></li>
+  </ul>
+  <div class="powerdby">
+    Powered by <a href="https://gohugo.io/">Hugo</a> and <a href="https://github.com/taikii/whiteplain">Whiteplain</a>
+  </div>
+</div>
+
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-P5EZCXRPMM"></script>
+      <script>
+        var doNotTrack = false;
+        if ( true ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-P5EZCXRPMM');
+        }
+      </script>
+
+</body>
+</html>

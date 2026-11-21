@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>A Picture Is Worth 1024³ WORDs - Bartosz Nitka</title>
+  <meta property="og:title" content="A Picture Is Worth 1024³ WORDs - Bartosz Nitka" />
+  <meta name="twitter:title" content="A Picture Is Worth 1024³ WORDs - Bartosz Nitka" />
+  <meta name="description" content="
+  How this post was written:
+  the experience, the work and the decisions are mine. I used a clanker (a coding agent) to turn my notes, commits and memories into a cohesive story, then reviewed it for accuracy. See my series on working with clankers.
+
+
+Sigma loaded new Haskell code while it was running.
+After a while it couldn&rsquo;t load any more.
+The memory wasn&rsquo;t full.
+It was fragmented.">
+  <meta property="og:description" content="
+  How this post was written:
+  the experience, the work and the decisions are mine. I used a clanker (a coding agent) to turn my notes, commits and memories into a cohesive story, then reviewed it for accuracy. See my series on working with clankers.
+
+
+Sigma loaded new Haskell code while it was running.
+After a while it couldn&rsquo;t load any more.
+The memory wasn&rsquo;t full.
+It was fragmented.">
+  <meta name="twitter:description" content="
+  How this post was written:
+  the experience, the work and the decisions are mine. I used a clanker (a coding agent) to turn my notes, commits and memories into a cohesive story, then reviewed it …">
+  <meta name="author" content="Bartosz Nitka"/>
+  <meta property="og:site_name" content="Bartosz Nitka" />
+  <meta property="og:url" content="http://niteria.github.io/posts/a-picture-is-worth-1024-words/" />
+  <meta property="og:type" content="article" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="generator" content="Hugo 0.158.0">
+  <link rel="stylesheet" href="/css/style.css" media="all" />
+
+  <link rel="stylesheet" href="/css/syntax.css" media="all" />
+  <link rel="stylesheet" href="/css/custom.css" media="all" />
+
+  <script src="/js/script.js"></script>
+  <script src="/js/custom.js"></script>
+  <script defer src="/fontawesome/all.min.js"></script>
+</head>
+
+<body>
+
+<header class="site-header">
+  <nav class="site-navi">
+    <h1 class="site-title"><a href="/">Bartosz Nitka</a></h1>
+    <ul class="site-navi-items">
+      <li class="site-navi-item-archives"><a href="/archives/" title="Archives">Archives</a></li>
+      <li class="site-navi-item-about"><a href="/about/" title="About">About</a></li>
+    </ul>
+  </nav>
+</header>
+<hr class="site-header-bottom">
+
+  <div class="main" role="main">
+    <article class="article">
+      
+      
+      <h1 class="article-title">A Picture Is Worth 1024³ WORDs</h1>
+      
+      <hr class="article-title-bottom">
+      <ul class="article-meta">
+        <li class="article-meta-date"><time>July 23, 2026</time></li>
+        <li class="article-meta-tags">
+          <a href="/tags/debugging/">
+            <i class="fa-solid fa-tag"></i>
+            debugging
+          </a>&nbsp;
+        </li>
+        <li class="article-meta-tags">
+          <a href="/tags/software-engineering/">
+            <i class="fa-solid fa-tag"></i>
+            software-engineering
+          </a>&nbsp;
+        </li>
+      </ul>
+      
+<aside class="toc">
+  <nav id="TableOfContents"></nav>
+</aside>
+      <aside class="clanker-note" style="border-left: 3px solid #999; padding: 0.4em 0.9em; margin: 1em 0; font-size: 0.92em; color: #555;">
+  <p style="margin: 0;"><strong>How this post was written:</strong>
+  the experience, the work and the decisions are mine. I used a clanker (a coding agent) to turn my notes, commits and memories into a cohesive story, then reviewed it for accuracy. See <a href="http://niteria.github.io/posts/why-its-frustrating-to-work-with-clankers/">my series on working with clankers</a>.</p>
+</aside>
+
+<p>Sigma loaded new Haskell code while it was running.
+After a while it couldn&rsquo;t load any more.
+The memory wasn&rsquo;t full.
+It was fragmented.</p>
+<h1 id="code-that-has-to-live-below-2-gb">Code that has to live below 2 GB</h1>
+<p>This is the system from <a href="http://niteria.github.io/posts/that-one-time-it-was-glibc/">That One Time It Was Glibc</a>, a couple of years earlier.
+Jon Coens <a href="https://simonmar.github.io/posts/2017-10-17-hotswapping-haskell.html">described it</a> in 2017: the frequently changing code is built as an object file, loaded into the running server, and the old one is dropped once nothing refers to it.
+The object files were loaded by GHC&rsquo;s own linker, and that came with a limit:</p>
+<blockquote>
+<p>Files like these can only be loaded into the lower 2GB of memory (x86_64 small memory model uses 32 bit relative jumps), which can become restrictive when your object file gets large.
+Since the update mechanism relies on having multiple objects in memory at the same time, fragmentation of the mappable address space can become a problem.</p>
+</blockquote>
+<p>On Linux it can be tighter still.
+By default GHC&rsquo;s linker asks the kernel for such memory with <code>MAP_32BIT</code>, and the kernel hands those mappings out of the upper half only, from 1 GB to 2 GB.
+The comment in <a href="https://github.com/torvalds/linux/blob/v4.4/arch/x86/kernel/sys_x86_64.c#L103-L113">the kernel source</a> says &ldquo;Give it 1GB of playground for now.&rdquo;
+The linker can be told where to start instead, with <a href="https://downloads.haskell.org/ghc/latest/docs/users_guide/runtime_control.html#rts-flag-xm-address"><code>+RTS -xm</code></a>, and then the space below 1 GB is usable too.
+Simon Marlow, who wrote most of GHC&rsquo;s runtime, was on our team, so I&rsquo;m sure we used the best flags and took all we could get.
+The pictures below use 2000 MB.</p>
+<h1 id="a-new-object-before-the-old-one-goes">A new object before the old one goes</h1>
+<p>New code was loaded about every ten minutes.
+The server keeps serving requests with the old code until the new code is loaded.
+So for a moment both are in memory, and then the old one goes.
+In a code review from 2016 I put it this way: &ldquo;We load and unload in a FIFO manner&rdquo;.</p>
+<h1 id="one-file-several-pieces">One file, several pieces</h1>
+<p>At first the linker put a whole object file below 2 GB, as one block.
+In 2015 Simon changed that, and <a href="https://github.com/ghc/ghc/commit/04e8366608fee4f5e3358acc855bc6f556c3f508">his commit</a> says why:</p>
+<blockquote>
+<p>Previously we would map the entire object file using MAP_32BIT, but the object file can consist of 75% or more symbols, which only need to be present during linking, so this is wasteful.
+In our particular application, we&rsquo;re already running out of space here.</p>
+</blockquote>
+<p>The application was Sigma.
+Since that change the linker maps the file above 2 GB to read it, and puts below 2 GB only what has to be there:</p>
+<figure><img src="/static/lower-2g/pieces.svg"
+    alt="The object file drawn as a row of blocks: symbols, names and relocations, which are only needed while linking, then code, constants, data and a few small sections. Below it, the address space under 2 GB: a table added by the linker, the code, a single 4 KB page, a piece of the old object, the constants, the data, and free space." width="640">
+</figure>
+
+<p>Each big section becomes a mapping of its own.
+The small sections are copied into 4 KB pages that a small allocator inside the linker hands out.
+The linker also adds a table with 16 bytes for every symbol in the file, which it uses to reach things that are more than 2 GB away from the code.
+For a big object that table is megabytes, so it gets a mapping of its own too.</p>
+<p>Each of those mappings goes to the lowest address where it fits, which is how the kernel searches for mappings like these.
+So one object is several pieces, and they don&rsquo;t have to end up next to each other.</p>
+<h1 id="looking-at-the-address-space">Looking at the address space</h1>
+<p>After a while we were unable to load new objects.
+I built a visualizer for the process&rsquo;s memory mappings to see why.
+It drew one row of the pictures below: the address space at one moment.</p>
+<p>I don&rsquo;t have it any more, so I had a clanker draw time-lapses from <a href="/static/lower-2g/m32sim.py">a model</a>.
+The model has 2000 MB of address space and a load every ten minutes.
+Its small allocator is copied from GHC&rsquo;s source.
+How big the pieces are is my guess.
+When I say an object is 600 MB, I mean what it puts below 2 GB, and its code is the biggest piece, 56% of that.</p>
+<h1 id="pages-in-the-way">Pages in the way</h1>
+<p>The small allocator fills up to 32 pages at a time, and when none of them has room it maps one more page, wherever the kernel puts it.</p>
+<p>It never reused a page.
+When an object was unloaded and its small sections were freed, their page still counted as full, and it stayed mapped for as long as the allocator kept it on its list.
+So new objects kept needing fresh pages, and each fresh page landed at the lowest free address there was at that moment, somewhere among the pieces of the objects.</p>
+<figure><img src="/static/lower-2g/pages.svg"
+    alt="Two time-lapses of a 2000 MB address space, one row per load, with objects of about 600 MB. Before the fix, single pages are left across the address space and load 20 fails with 1384 MB free. After the fix the same loads succeed." width="640">
+</figure>
+
+<p>Each row is one load, and it shows where the pieces of the new object went.
+The objects are about 600 MB, give or take 20, and they don&rsquo;t grow.</p>
+<p>In the upper half the black lines are pages.
+Each one starts when the allocator needs a fresh page and then runs down the picture, because the page stays.
+A piece of an object can&rsquo;t lie across a page, so the address space on the left is cut into narrower and narrower columns.
+After three hours a 617 MB object arrives.
+Its code is 346 MB and has to go in one piece, and the biggest hole is 330 MB, with 1384 MB free.</p>
+<p>In March 2016 I landed <a href="https://github.com/ghc/ghc/commit/82e36edcbd831e9b7c05e1c2cb918ad5de56cd3a">a fix</a> for that in GHC.
+The allocator now reuses a page once nobody else is using it, and it gets its 32 pages as one block up front:</p>
+<blockquote>
+<p>m32_allocator will preallocate the &ldquo;filling&rdquo; area, so that the pages it allocates end up as a big chunk instead of being allocated on demand in random places, fragmenting the precious lower 2G address space.</p>
+</blockquote>
+<p>My first version asked the kernel for those 32 pages one at a time, and when I tested it they came back next to each other.
+Simon pointed out in <a href="https://web.archive.org/web/20161220052105/https://phabricator.haskell.org/D1976">the review</a> that nothing guarantees that, so the final version asks for one block.</p>
+<p>In the same review I wrote what we had been seeing:</p>
+<blockquote>
+<p>The live memory should easily fit into 2 pages, but without reuse we ended up allocating up to <code>M32_MAX_PAGES</code> pages, before any of them would stop being &ldquo;filling&rdquo; pages and end up being <code>munmap</code>ed.</p>
+</blockquote>
+<p>The lower half of the picture is the same objects with the fix.
+The block is the single line at the left edge, and the pieces go wherever there is room.</p>
+<p>In twelve runs of the model without the fix, a load failed in nine, after 3 to 18 hours.
+With the fix, none of the twelve had a failed load in 400 loads, which is almost three days.</p>
+<h1 id="even-then">Even then</h1>
+<p>The size of the object file fluctuated organically as the code was developed, and the trend was general growth.
+With that, things still break, in a way that is hard to guess.</p>
+<p>Here the allocator is the fixed one.
+The objects are a little bigger, about 680 MB.
+They still vary by up to 20 MB, and now they also grow by half a megabyte per load:</p>
+<figure><img src="/static/lower-2g/growing.svg"
+    alt="A time-lapse of a 2000 MB address space with the fixed allocator, one row per load. The objects start at about 680 MB, vary by up to 20 MB and grow by half a megabyte per load. Load 74 fails with 1238 MB free." width="640">
+</figure>
+
+<p>For twelve hours every load succeeds.
+Then a 734 MB object arrives.
+Its code is 411 MB and has to go in one piece, and the biggest hole is 406 MB, with 1238 MB of the 2000 free.</p>
+<p>A swap needs room for the new object while the old one is still there, and the pieces of the old one sit wherever the swaps before it left room.
+Nothing is leaking, and nothing is in the way any more.
+There is simply no hole big enough, long before the address space is full.</p>
+<p>In twelve runs like this one the first failure came after 12 hours to 2 days, with objects between 734 and 837 MB.</p>
+<h1 id="the-price">The price</h1>
+<p>The price was stale code or service unavailability.</p>
+<p>Restarting a server that has reached that state gets it out of it.
+But how do you avoid a restart storm?
+The obvious next fix would be rolling restarts.</p>
+<p>It was more complex than that, and more complex than these pictures.
+Depending on how requests were routed, some servers sometimes kept three objects at once.
+In the model, with objects of about 600 MB that grow the same way, a server that holds on to a third object for one load in ten has its first failed load within a day, where the others last a day and a half to three.</p>
+<h1 id="the-way-out">The way out</h1>
+<p>By 2017 the write-up said &ldquo;we&rsquo;re running out of options&rdquo;, and named the way out: true shared objects, which can be loaded anywhere.
+That is the change from <a href="http://niteria.github.io/posts/that-one-time-it-was-glibc/">That One Time It Was Glibc</a>.</p>
+<h1 id="worth-writing">Worth writing</h1>
+<p>A counter can tell you how much of the address space is free.
+It takes a picture to show why that doesn&rsquo;t help.
+The visualizer drew one row of these pictures, a 1024³ WORDs.</p>
+    </article>
+
+    
+
+
+    <ul class="pager article-pager">
+      <li class="pager-newer pager-noitem">&lt; Newer</li>
+      <li class="pager-older">
+        <a href="/posts/that-one-time-it-was-glibc/" data-toggle="tooltip" data-placement="top" title="That One Time It Was Glibc">Older &gt;</a>
+      </li>
+    </ul>
+  </div>
+
+
+<div class="site-footer">
+  <div class="copyright">&copy; Copyright 2019 Bartosz Nitka</div>
+  <ul class="site-footer-items">
+    <li class="site-footer-item-about"><a href="/about/" title="About">About</a></li>
+  </ul>
+  <div class="powerdby">
+    Powered by <a href="https://gohugo.io/">Hugo</a> and <a href="https://github.com/taikii/whiteplain">Whiteplain</a>
+  </div>
+</div>
+
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-P5EZCXRPMM"></script>
+      <script>
+        var doNotTrack = false;
+        if ( true ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-P5EZCXRPMM');
+        }
+      </script>
+
+</body>
+</html>

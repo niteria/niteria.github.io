@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>What Would You Do if You Weren&#39;t Afraid? - Bartosz Nitka</title>
+  <meta property="og:title" content="What Would You Do if You Weren&#39;t Afraid? - Bartosz Nitka" />
+  <meta name="twitter:title" content="What Would You Do if You Weren&#39;t Afraid? - Bartosz Nitka" />
+  <meta name="description" content="
+  How this post was written:
+  the experience, the work and the decisions are mine. I used a clanker (a coding agent) to turn my notes, commits and memories into a cohesive story, then reviewed it for accuracy. See my series on working with clankers.
+
+
+A service I worked on hit a time bomb, and the whole service went down.
+I tried to fix it by patching the binary on every machine.
+I didn&rsquo;t pull it off in time.">
+  <meta property="og:description" content="
+  How this post was written:
+  the experience, the work and the decisions are mine. I used a clanker (a coding agent) to turn my notes, commits and memories into a cohesive story, then reviewed it for accuracy. See my series on working with clankers.
+
+
+A service I worked on hit a time bomb, and the whole service went down.
+I tried to fix it by patching the binary on every machine.
+I didn&rsquo;t pull it off in time.">
+  <meta name="twitter:description" content="
+  How this post was written:
+  the experience, the work and the decisions are mine. I used a clanker (a coding agent) to turn my notes, commits and memories into a cohesive story, then reviewed it …">
+  <meta name="author" content="Bartosz Nitka"/>
+  <meta property="og:site_name" content="Bartosz Nitka" />
+  <meta property="og:url" content="http://niteria.github.io/posts/what-would-you-do-if-you-werent-afraid/" />
+  <meta property="og:type" content="article" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="generator" content="Hugo 0.158.0">
+  <link rel="stylesheet" href="/css/style.css" media="all" />
+
+  <link rel="stylesheet" href="/css/syntax.css" media="all" />
+  <link rel="stylesheet" href="/css/custom.css" media="all" />
+
+  <script src="/js/script.js"></script>
+  <script src="/js/custom.js"></script>
+  <script defer src="/fontawesome/all.min.js"></script>
+</head>
+
+<body>
+
+<header class="site-header">
+  <nav class="site-navi">
+    <h1 class="site-title"><a href="/">Bartosz Nitka</a></h1>
+    <ul class="site-navi-items">
+      <li class="site-navi-item-archives"><a href="/archives/" title="Archives">Archives</a></li>
+      <li class="site-navi-item-about"><a href="/about/" title="About">About</a></li>
+    </ul>
+  </nav>
+</header>
+<hr class="site-header-bottom">
+
+  <div class="main" role="main">
+    <article class="article">
+      
+      
+      <h1 class="article-title">What Would You Do if You Weren&#39;t Afraid?</h1>
+      
+      <hr class="article-title-bottom">
+      <ul class="article-meta">
+        <li class="article-meta-date"><time>July 21, 2026</time></li>
+        <li class="article-meta-tags">
+          <a href="/tags/debugging/">
+            <i class="fa-solid fa-tag"></i>
+            debugging
+          </a>&nbsp;
+        </li>
+        <li class="article-meta-tags">
+          <a href="/tags/software-engineering/">
+            <i class="fa-solid fa-tag"></i>
+            software-engineering
+          </a>&nbsp;
+        </li>
+      </ul>
+      
+<aside class="toc">
+  <nav id="TableOfContents"></nav>
+</aside>
+      <aside class="clanker-note" style="border-left: 3px solid #999; padding: 0.4em 0.9em; margin: 1em 0; font-size: 0.92em; color: #555;">
+  <p style="margin: 0;"><strong>How this post was written:</strong>
+  the experience, the work and the decisions are mine. I used a clanker (a coding agent) to turn my notes, commits and memories into a cohesive story, then reviewed it for accuracy. See <a href="http://niteria.github.io/posts/why-its-frustrating-to-work-with-clankers/">my series on working with clankers</a>.</p>
+</aside>
+
+<p>A service I worked on hit a time bomb, and the whole service went down.
+I tried to fix it by patching the binary on every machine.
+I didn&rsquo;t pull it off in time.</p>
+<h1 id="the-time-bomb">The time bomb</h1>
+<p>The service was Sigma, the one from <a href="http://niteria.github.io/posts/the-compiler-is-wrong/">The Compiler Is Wrong</a>.
+We integrated a lot of code that other teams maintained, because our data sources used their clients.</p>
+<p>I don&rsquo;t remember what the time bomb was.
+We practiced gradual rollout, and everything was fine for a while.
+A gradual rollout catches code that breaks when it starts running.
+It doesn&rsquo;t catch code that works until a moment that comes for every server at once.</p>
+<p>Monitoring caught all the servers going down, and they crashed again on restart.
+The cause was obvious from the core dumps, and there was no lever to stop it.</p>
+<h1 id="the-slow-way-out">The slow way out</h1>
+<p>The way out was to push new code.
+That took forever to build, and a deploy could take minutes on top of it.</p>
+<h1 id="nopping-it-out">Nopping it out</h1>
+<p>The time bomb could be nopped out.
+A check like that compiles down to a comparison and a jump.
+Overwrite the jump with instructions that do nothing, and the check is gone.</p>
+<p>I had a clanker write the smallest program with a time bomb in it, to show what that means:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cstdio&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cstdlib&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;ctime&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// A time bomb: this check was fine on the day it was written.
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">const</span> time_t kDeadline <span style="color:#f92672">=</span> <span style="color:#ae81ff">1400000000</span>;  <span style="color:#75715e">// 2014-05-13
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (time(<span style="color:#66d9ef">nullptr</span>) <span style="color:#f92672">&gt;</span> kDeadline) {
+</span></span><span style="display:flex;"><span>    fprintf(stderr, <span style="color:#e6db74">&#34;deadline passed, refusing to start</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>    abort();
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  puts(<span style="color:#e6db74">&#34;serving requests&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><pre tabindex="0"><code>$ g++ -O2 service.cpp -o service
+$ ./service
+deadline passed, refusing to start
+Aborted
+</code></pre><p>In the compiled program the whole check is three instructions, and the last one is two bytes long:</p>
+<pre tabindex="0"><code>&lt;main&gt; (File Offset: 0x1080):
+  55                    push   %rbp
+  31 ff                 xor    %edi,%edi
+  48 89 e5              mov    %rsp,%rbp
+  e8 b5 ff ff ff        call   &lt;time@plt&gt;
+  48 3d 00 4e 72 53     cmp    $0x53724e00,%rax
+  7f 10                 jg     &lt;main+0x23&gt;
+</code></pre><h1 id="a-patch-instead-of-a-binary">A patch instead of a binary</h1>
+<p>Doing that by hand on one machine is easy.
+Getting a patched binary to every machine is not: it was hard to package, and the deploy would still take minutes.</p>
+<p>The idea came from the days when anime releases sometimes came with binary patches.
+A fix was a small file, and <code>xdelta</code> turned the release you already had into the fixed one.</p>
+<p>Our deployment had a pre-deployment command.
+I believe it was designed for one-time setup before a new version runs.
+I put the patching script into it, so that every machine would patch the binary it already had.</p>
+<p>For the program above, the script is one command:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e"># Nop out the two-byte jump at 0x1091, but only if those two bytes</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># are the jump we expect.</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>od -An -tx1 -j <span style="color:#66d9ef">$((</span><span style="color:#ae81ff">0</span>x1091<span style="color:#66d9ef">))</span> -N <span style="color:#ae81ff">2</span> ./service | tr -d <span style="color:#e6db74">&#39; \n&#39;</span><span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span> 7f10 <span style="color:#f92672">]</span> <span style="color:#f92672">&amp;&amp;</span>
+</span></span><span style="display:flex;"><span>  printf <span style="color:#e6db74">&#39;\x90\x90&#39;</span> | dd of<span style="color:#f92672">=</span>./service bs<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span> seek<span style="color:#f92672">=</span><span style="color:#66d9ef">$((</span><span style="color:#ae81ff">0</span>x1091<span style="color:#66d9ef">))</span> conv<span style="color:#f92672">=</span>notrunc status<span style="color:#f92672">=</span>none
+</span></span></code></pre></div><pre tabindex="0"><code>$ sh patch.sh
+$ ./service
+serving requests
+</code></pre><h1 id="the-numbers-mason">The numbers, Mason. What do they mean?<sup><a href="https://callofduty.fandom.com/wiki/Operation_40/Transcript#ROOM_9">[1]</a></sup></h1>
+<p>The numbers were offsets.
+I knew where the jump was in a loaded binary, because I had it in gdb.
+But the script patches a file, and between a file and a loaded binary sits the layer of linkers and loaders.</p>
+<p>This is the jump in the toy program, in gdb:</p>
+<pre tabindex="0"><code>(gdb) x/i main+17
+   0x555555555091 &lt;main+17&gt;: jg     0x5555555550a3 &lt;main+35&gt;
+</code></pre><p>The script above writes to <code>0x1091</code>.
+Both numbers name the same two bytes, and three programs had a say in them.</p>
+<p>The compiler put the jump 17 bytes into <code>main</code>.</p>
+<p>The linker put <code>main</code> at address <code>0x1080</code> of the program.
+It also wrote down which part of the file holds which addresses:</p>
+<pre tabindex="0"><code>$ readelf -lW service | grep -E &#39;Type|LOAD&#39;
+  Type           Offset   VirtAddr           PhysAddr           FileSiz  MemSiz   Flg Align
+  LOAD           0x000000 0x0000000000000000 0x0000000000000000 0x0007b0 0x0007b0 R   0x1000
+  LOAD           0x001000 0x0000000000001000 0x0000000000001000 0x0001c9 0x0001c9 R E 0x1000
+  LOAD           0x002000 0x0000000000002000 0x0000000000002000 0x000168 0x000168 R   0x1000
+  LOAD           0x002d80 0x0000000000003d80 0x0000000000003d80 0x0002b0 0x0002d0 RW  0x1000
+</code></pre><p>The second <code>LOAD</code> line is the code: addresses from <code>0x1000</code> come from offset <code>0x1000</code> in the file.
+For the code of this small program the two columns agree.
+The last line shows that they don&rsquo;t have to: the data at address <code>0x3d80</code> sits at offset <code>0x2d80</code>.</p>
+<p>The loader picked where the whole program goes in memory.
+Under gdb it starts at <code>0x555555554000</code>.
+Outside gdb it starts somewhere else on every run.
+This is a two-line program that prints the address of its own <code>main</code>:</p>
+<pre tabindex="0"><code>$ ./where; ./where; ./where
+main is at 0x560b9824b050
+main is at 0x563169557050
+main is at 0x5572a4fcf050
+</code></pre><p>So the address from gdb has to be undone in two steps.
+Take away where the loader put the program, and what is left is the linker&rsquo;s address.
+Look that up in the linker&rsquo;s table, and you have the offset in the file.</p>
+<figure><img src="/static/afraid/offsets.svg"
+    alt="The program&#39;s pieces in the file and in the running process: the code is at offset 0x1000 in the file and at address 0x555555555000 in memory, and the jump is 0x91 bytes into it." width="640">
+</figure>
+
+<p>gdb has a table with both steps in it:</p>
+<pre tabindex="0"><code>(gdb) info proc mappings
+Start Addr         End Addr           Size               Offset             Perms File
+0x0000555555554000 0x0000555555555000 0x1000             0x0                r--p  service
+0x0000555555555000 0x0000555555556000 0x1000             0x1000             r-xp  service
+...
+</code></pre><p>The jump is in the second mapping, so its offset is <code>0x555555555091 - 0x555555555000 + 0x1000</code>, which is <code>0x1091</code>.</p>
+<p>Back then executables usually weren&rsquo;t position independent, so the loader had less to say and the linker more.
+Built that way, the same program has its jump at address <code>0x401081</code> and at offset <code>0x1081</code> in the file.</p>
+<p>I think I did all of this by hand, sifting through assembly with debug symbols.
+That was slow.</p>
+<p>And whichever way you get the number, it holds for one exact build.
+The same source compiled with <code>-O1</code> has its jump at <code>0x117d</code>, not <code>0x1091</code>.
+There the check in the script fails, nothing is written, and the service still refuses to start.</p>
+<h1 id="too-slow">Too slow</h1>
+<p>I didn&rsquo;t pull it off in time.
+I had tested it on one machine, but someone managed to build the package faster than expected.
+The proper fix fixed it.</p>
+<h1 id="what-would-you-do-if-you-werent-afraid">What would you do if you weren&rsquo;t afraid?</h1>
+<p>The question is a callback to one of Facebook&rsquo;s &ldquo;propaganda&rdquo; posters, the same family as &ldquo;Move fast and break things&rdquo;.</p>
+<figure><img src="/static/afraid/poster-thomas-hawk-cc-by-nc-2.0.jpg"
+    alt="A poster with the words: What would you do if you weren&#39;t afraid?" width="360"><figcaption>
+      <p>The poster at Facebook&rsquo;s Menlo Park campus in March 2013. Photo by <a href="https://www.flickr.com/photos/thomashawk/52982629759">Thomas Hawk</a>, <a href="https://creativecommons.org/licenses/by-nc/2.0/">CC BY-NC 2.0</a>.</p>
+    </figcaption>
+</figure>
+
+<p>Later I turned the story into a flash talk for an audience slightly larger than my team: us and the consumers of our service.
+People generally liked it.
+Someone even suggested doing it for a larger internal audience.</p>
+    </article>
+
+    
+
+
+    <ul class="pager article-pager">
+      <li class="pager-newer">
+          <a href="/posts/that-one-time-it-was-glibc/" data-toggle="tooltip" data-placement="top" title="That One Time It Was Glibc">&lt; Newer</a>
+      </li>
+      <li class="pager-older">
+        <a href="/posts/everything-was-const/" data-toggle="tooltip" data-placement="top" title="Everything Was Const">Older &gt;</a>
+      </li>
+    </ul>
+  </div>
+
+
+<div class="site-footer">
+  <div class="copyright">&copy; Copyright 2019 Bartosz Nitka</div>
+  <ul class="site-footer-items">
+    <li class="site-footer-item-about"><a href="/about/" title="About">About</a></li>
+  </ul>
+  <div class="powerdby">
+    Powered by <a href="https://gohugo.io/">Hugo</a> and <a href="https://github.com/taikii/whiteplain">Whiteplain</a>
+  </div>
+</div>
+
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-P5EZCXRPMM"></script>
+      <script>
+        var doNotTrack = false;
+        if ( true ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-P5EZCXRPMM');
+        }
+      </script>
+
+</body>
+</html>

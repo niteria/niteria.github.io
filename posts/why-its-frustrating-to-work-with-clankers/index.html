@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>I. Why It&#39;s Frustrating to Work With Clankers - Bartosz Nitka</title>
+  <meta property="og:title" content="I. Why It&#39;s Frustrating to Work With Clankers - Bartosz Nitka" />
+  <meta name="twitter:title" content="I. Why It&#39;s Frustrating to Work With Clankers - Bartosz Nitka" />
+  <meta name="description" content="I&rsquo;ve been thinking about how far coding agents can scale.
+A clanker has a limited context window. My intuition was that this puts a limit on the size of project it can work on. GPT-5.6 Sol disagreed. It argued that you can keep state outside of the context window: in code, documentation, issue trackers, tests and process. Split the work into local tasks and use more agents for review.
+I wasn&rsquo;t convinced. Tests can tell you whether the code does what the test says. They can&rsquo;t tell you whether it&rsquo;s the right abstraction, whether it fits the architecture or whether it just made the codebase a little worse. A reviewer clanker has the same problem.">
+  <meta property="og:description" content="I&rsquo;ve been thinking about how far coding agents can scale.
+A clanker has a limited context window. My intuition was that this puts a limit on the size of project it can work on. GPT-5.6 Sol disagreed. It argued that you can keep state outside of the context window: in code, documentation, issue trackers, tests and process. Split the work into local tasks and use more agents for review.
+I wasn&rsquo;t convinced. Tests can tell you whether the code does what the test says. They can&rsquo;t tell you whether it&rsquo;s the right abstraction, whether it fits the architecture or whether it just made the codebase a little worse. A reviewer clanker has the same problem.">
+  <meta name="twitter:description" content="I&rsquo;ve been thinking about how far coding agents can scale.
+A clanker has a limited context window. My intuition was that this puts a limit on the size of project it can work on. GPT-5.6 Sol …">
+  <meta name="author" content="Bartosz Nitka"/>
+  <meta property="og:site_name" content="Bartosz Nitka" />
+  <meta property="og:url" content="http://niteria.github.io/posts/why-its-frustrating-to-work-with-clankers/" />
+  <meta property="og:type" content="article" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="generator" content="Hugo 0.158.0">
+  <link rel="stylesheet" href="/css/style.css" media="all" />
+
+  <link rel="stylesheet" href="/css/syntax.css" media="all" />
+  <link rel="stylesheet" href="/css/custom.css" media="all" />
+
+  <script src="/js/script.js"></script>
+  <script src="/js/custom.js"></script>
+  <script defer src="/fontawesome/all.min.js"></script>
+</head>
+
+<body>
+
+<header class="site-header">
+  <nav class="site-navi">
+    <h1 class="site-title"><a href="/">Bartosz Nitka</a></h1>
+    <ul class="site-navi-items">
+      <li class="site-navi-item-archives"><a href="/archives/" title="Archives">Archives</a></li>
+      <li class="site-navi-item-about"><a href="/about/" title="About">About</a></li>
+    </ul>
+  </nav>
+</header>
+<hr class="site-header-bottom">
+
+  <div class="main" role="main">
+    <article class="article">
+      
+      <p class="article-title-series"><a href="/series/coding-agents-and-limits/">Coding Agents and Limits</a>&nbsp;/</p>
+      <h1 class="article-title">I. Why It&#39;s Frustrating to Work With Clankers</h1>
+      
+      <hr class="article-title-bottom">
+      <ul class="article-meta">
+        <li class="article-meta-date"><time>July 19, 2026</time></li>
+        <li class="article-meta-tags">
+          <a href="/tags/ai/">
+            <i class="fa-solid fa-tag"></i>
+            AI
+          </a>&nbsp;
+        </li>
+        <li class="article-meta-tags">
+          <a href="/tags/software-engineering/">
+            <i class="fa-solid fa-tag"></i>
+            software-engineering
+          </a>&nbsp;
+        </li>
+      </ul>
+      
+<aside class="toc">
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#architecture-is-not-just-constraints">Architecture is not just constraints</a></li>
+    <li><a href="#taste-is-compressed-experience">Taste is compressed experience</a></li>
+    <li><a href="#review-does-not-fully-solve-it">Review does not fully solve it</a></li>
+    <li><a href="#this-strengthens-the-bounded-context-argument">This strengthens the bounded-context argument</a></li>
+    <li><a href="#humans-do-not-fully-solve-this-either">Humans do not fully solve this either</a></li>
+    <li><a href="#the-actual-limit">The actual limit</a></li>
+  </ul>
+</nav>
+</aside>
+      <p>I&rsquo;ve been thinking about how far coding agents can scale.</p>
+<p>A clanker has a limited context window. My intuition was that this puts a limit on the size of project it can work on. GPT-5.6 Sol disagreed. It argued that you can keep state outside of the context window: in code, documentation, issue trackers, tests and process. Split the work into local tasks and use more agents for review.</p>
+<p>I wasn&rsquo;t convinced. Tests can tell you whether the code does what the test says. They can&rsquo;t tell you whether it&rsquo;s the right abstraction, whether it fits the architecture or whether it just made the codebase a little worse. A reviewer clanker has the same problem.</p>
+<p>This is what makes clankers frustrating to work with. They can produce code that compiles, passes tests and looks reasonable in isolation, but is still wrong. It takes taste and project context to explain why.</p>
+<p>I said as much and GPT-5.6 Sol did a better job articulating the problem than I could. A clanker explained why it&rsquo;s frustrating to work with clankers. Here&rsquo;s its answer verbatim:</p>
+<hr>
+<p>Yes. That is the strongest objection to the “externalize everything into tests and process” answer.</p>
+<p>Tests can verify that code satisfies specified behavior. They cannot establish that the specification was the right one, that the abstraction is appropriate, or that the implementation communicates the underlying idea well.</p>
+<p>There is a hierarchy here:</p>
+<table>
+  <thead>
+      <tr>
+          <th>Property</th>
+          <th>How verifiable is it?</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Compiles, passes tests, preserves an API</td>
+          <td>Highly verifiable</td>
+      </tr>
+      <tr>
+          <td>Obeys dependency and layering rules</td>
+          <td>Partly verifiable</td>
+      </tr>
+      <tr>
+          <td>Implements the intended architecture</td>
+          <td>Only partly verifiable</td>
+      </tr>
+      <tr>
+          <td>Uses the right abstraction</td>
+          <td>Judgment-dependent</td>
+      </tr>
+      <tr>
+          <td>Is simple, clear, and expressive</td>
+          <td>Judgment-dependent</td>
+      </tr>
+      <tr>
+          <td>Fits the project’s aesthetic and future direction</td>
+          <td>Largely tacit</td>
+      </tr>
+      <tr>
+          <td>Will remain the best design as the system evolves</td>
+          <td>Not presently verifiable</td>
+      </tr>
+  </tbody>
+</table>
+<p>You can enforce that module A does not import module B. You cannot mechanically establish that the split between A and B reflects the correct conceptual decomposition.</p>
+<p>You can require all persistence to go through a repository interface. You cannot establish from that rule alone whether the repository interface is useful architecture or unnecessary indirection.</p>
+<p>You can measure function length, coupling, cyclomatic complexity, naming patterns, duplication, and test coverage. None of those measurements tells you whether the code expresses the idea directly. Once such proxies become targets, they often produce superficially compliant but worse code.</p>
+<h2 id="architecture-is-not-just-constraints">Architecture is not just constraints</h2>
+<p>Some architecture can be represented as executable constraints:</p>
+<ul>
+<li>permitted dependency directions,</li>
+<li>ownership boundaries,</li>
+<li>protocol schemas,</li>
+<li>latency budgets,</li>
+<li>data-flow restrictions,</li>
+<li>deployment boundaries.</li>
+</ul>
+<p>But architecture also contains a theory of the system: which concepts are fundamental, which distinctions matter, where change is expected, and which forms of complexity are acceptable.</p>
+<p>That theory may never be written down completely. Even when it is, applying it to a novel case requires interpretation. Two implementations can obey every stated architectural rule while only one genuinely belongs in the system.</p>
+<p>This creates a recursion problem. To verify that the implementation followed the architecture, the verifier needs enough understanding to reconstruct the architectural intent. But that understanding is itself part of the context that was supposed to be externalized.</p>
+<p>An architectural compliance agent can therefore check <strong>legality</strong> more reliably than <strong>appropriateness</strong>.</p>
+<h2 id="taste-is-compressed-experience">Taste is compressed experience</h2>
+<p>“Taste” can sound mystical, but much of it is accumulated judgment about tradeoffs:</p>
+<ul>
+<li>which complexity is essential and which is accidental,</li>
+<li>when repetition is clearer than abstraction,</li>
+<li>when a concept deserves a name,</li>
+<li>whether an interface reveals or conceals the real operation,</li>
+<li>which irregularity is worth tolerating,</li>
+<li>what future maintainers are likely to misunderstand,</li>
+<li>whether a local improvement damages the system’s conceptual integrity.</li>
+</ul>
+<p>These judgments are highly contextual. A pattern that is elegant in one codebase can be alien in another. A more generic solution can be either a powerful simplification or premature abstraction. The difference may depend on years of project history and expected future changes.</p>
+<p>Examples and style guides help, but they do not fully encode this judgment. An agent can imitate surface characteristics while missing the reason those characteristics existed.</p>
+<h2 id="review-does-not-fully-solve-it">Review does not fully solve it</h2>
+<p>A second agent can catch mistakes, but it has the same fundamental limitations:</p>
+<ul>
+<li>It may lack the same forgotten context.</li>
+<li>It may prefer a different but equally defensible design.</li>
+<li>It may reward conventional-looking code rather than project-specific coherence.</li>
+<li>It may be persuaded by the implementation’s internal consistency.</li>
+<li>Multiple agents may converge because they share training biases, not because the design is correct.</li>
+</ul>
+<p>Review is useful because independent perspectives reduce some errors. It is not a proof of quality.</p>
+<p>Even human review works this way. Senior engineers frequently disagree about whether code is tasteful, whether an abstraction is justified, and whether a design follows the architecture “in spirit.” Organizations resolve this through authority, ownership, culture, and continued observation—not objective verification.</p>
+<h2 id="this-strengthens-the-bounded-context-argument">This strengthens the bounded-context argument</h2>
+<p>Suppose a project’s quality depends on ten thousand small, tacit design decisions. Some of them are encoded in the code, some in documentation, some in conventions, and some only in the maintainers’ shared understanding.</p>
+<p>When an agent works locally, it may produce something that:</p>
+<ul>
+<li>passes every test,</li>
+<li>follows every explicit rule,</li>
+<li>looks clean in isolation,</li>
+<li>and still makes the project worse.</li>
+</ul>
+<p>It may introduce a second conceptual vocabulary for something that already exists. It may place responsibility at the wrong layer. It may generalize the wrong axis. It may remove an apparent irregularity that was preserving an important distinction.</p>
+<p>These errors are especially dangerous because they are not obvious failures. They create <strong>design drift</strong>. Each change is locally defensible, while the aggregate system gradually loses coherence.</p>
+<p>Compaction makes this worse because the information most likely to disappear is often precisely the subtle rationale:</p>
+<blockquote>
+<p>We considered this cleaner design before, but rejected it because it causes these three concepts to collapse into one.</p>
+</blockquote>
+<p>A summary often preserves the decision—“use approach X”—while losing the mental model that lets the agent recognize when and how that decision applies.</p>
+<h2 id="humans-do-not-fully-solve-this-either">Humans do not fully solve this either</h2>
+<p>Large human projects are possible, but not because humans have a reliable solution to this problem. They tolerate it.</p>
+<p>They use long-lived ownership, apprenticeship, code review, architectural leadership, shared vocabulary, and repeated interpersonal contact to transmit tacit judgment. Even then:</p>
+<ul>
+<li>architecture decays,</li>
+<li>abstractions proliferate,</li>
+<li>local styles diverge,</li>
+<li>institutional memory disappears,</li>
+<li>new teams misunderstand old constraints,</li>
+<li>and major systems periodically require consolidation or rewrites.</li>
+</ul>
+<p>A mature project is often partly a record of failures to preserve coherent intent.</p>
+<p>The difference is that a long-tenured human develops a persistent, richly connected model through years of interaction. Current session-based agents do not have an equivalent stable identity and lived project history. Giving them searchable documents is not the same as giving them that model.</p>
+<h2 id="the-actual-limit">The actual limit</h2>
+<p>So I would revise the earlier claim.</p>
+<p>External state and executable process can make arbitrarily large projects <strong>operable</strong> for bounded agents when tasks are sufficiently local and the important properties are formalizable. They do not make arbitrary design work reliably scalable.</p>
+<p>The unresolved bottleneck is not merely memory capacity. It is preserving and applying a coherent, evolving system of judgment.</p>
+<p>A single bounded-context agent cannot guarantee global aesthetic or architectural coherence across an unbounded sequence of changes. An agent organization cannot guarantee it either unless some mechanism maintains that judgment across time—and any such mechanism starts to resemble a persistent project mind rather than ordinary retrieval or compaction.</p>
+<p>The most defensible conclusion is therefore:</p>
+<blockquote>
+<p>Arbitrarily large implementation work may be decomposable. Arbitrarily large coherent design is not automatically decomposable.</p>
+</blockquote>
+<p>Some design decisions can be localized behind stable boundaries. Others alter the vocabulary and structure through which the entire project is understood. For those, the required context is global, historical, and partly tacit. No checklist, test suite, or retrieval layer fully substitutes for it.</p>
+<p>That does not make large agent-assisted projects impossible, but it means they are subject to the same—and probably stronger—architectural entropy as large human projects. The system can continue producing working code long after it has stopped producing a coherent design.</p>
+
+    </article>
+    <section class="article-series">
+      <h2 class="series-title"><a href="/series/coding-agents-and-limits/"><i class="fa-solid fa-book"></i>&nbsp;Coding Agents and Limits</a></h2>
+      <ol reversed="reversed" class="series">
+      </ol>
+    </section>
+
+    
+
+
+    <ul class="pager article-pager">
+      <li class="pager-newer">
+          <a href="/posts/context-window-is-small-weight-space-is-huge/" data-toggle="tooltip" data-placement="top" title="II. Context Window Is Small, Weight Space Is Huge: A Case for &#34;Sleep&#34;">&lt; Newer</a>
+      </li>
+      <li class="pager-older">
+        <a href="/posts/repairing-a-broken-multimeter-part-2/" data-toggle="tooltip" data-placement="top" title="Repairing a Broken Multimeter Part 2">Older &gt;</a>
+      </li>
+    </ul>
+  </div>
+
+
+<div class="site-footer">
+  <div class="copyright">&copy; Copyright 2019 Bartosz Nitka</div>
+  <ul class="site-footer-items">
+    <li class="site-footer-item-about"><a href="/about/" title="About">About</a></li>
+  </ul>
+  <div class="powerdby">
+    Powered by <a href="https://gohugo.io/">Hugo</a> and <a href="https://github.com/taikii/whiteplain">Whiteplain</a>
+  </div>
+</div>
+
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-P5EZCXRPMM"></script>
+      <script>
+        var doNotTrack = false;
+        if ( true ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-P5EZCXRPMM');
+        }
+      </script>
+
+</body>
+</html>

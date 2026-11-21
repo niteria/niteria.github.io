@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Fighting-Entropy on Bartosz Nitka</title>
+    <link>http://niteria.github.io/tags/fighting-entropy/</link>
+    <description>Recent content in Fighting-Entropy on Bartosz Nitka</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <managingEditor>niteria@gmail.com (Bartosz Nitka)</managingEditor>
+    <webMaster>niteria@gmail.com (Bartosz Nitka)</webMaster>
+    <copyright>&amp;copy; Copyright 2019 Bartosz Nitka</copyright>
+    <lastBuildDate>Thu, 02 Jun 2022 22:56:35 +0200</lastBuildDate>
+    <atom:link href="http://niteria.github.io/tags/fighting-entropy/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Repairing a Broken Multimeter Part 2</title>
+      <link>http://niteria.github.io/posts/repairing-a-broken-multimeter-part-2/</link>
+      <pubDate>Thu, 02 Jun 2022 22:56:35 +0200</pubDate><author>niteria@gmail.com (Bartosz Nitka)</author>
+      <guid>http://niteria.github.io/posts/repairing-a-broken-multimeter-part-2/</guid>
+      <description>&lt;p&gt;In&#xA;&lt;a href=&#34;http://niteria.github.io/posts/repairing-a-broken-multimeter/&#34; title=&#34;Repairing a Broken Multimeter&#34;&gt;Repairing a Broken Multimeter&lt;/a&gt;,&#xA;I identified a faulty capacitor &lt;code&gt;C18&lt;/code&gt; and desoldered it from the board.&#xA;I wasn&amp;rsquo;t sure what its purpose was and what to replace it with.&lt;/p&gt;&#xA;&lt;p&gt;Recently one reader, &lt;strong&gt;Marcin&lt;/strong&gt;, who&amp;rsquo;s interested in how multimeters work emailed me telling me that &lt;code&gt;C18&lt;/code&gt; is used in capacitance measurement, that the correct value is &lt;code&gt;1nF&lt;/code&gt; and that it helps with linearity for values lower than &lt;code&gt;4nF&lt;/code&gt;.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Repairing a Broken Multimeter</title>
+      <link>http://niteria.github.io/posts/repairing-a-broken-multimeter/</link>
+      <pubDate>Thu, 12 Mar 2020 15:32:21 +0100</pubDate><author>niteria@gmail.com (Bartosz Nitka)</author>
+      <guid>http://niteria.github.io/posts/repairing-a-broken-multimeter/</guid>
+      <description>&lt;p&gt;In December 2017 my multimeter broke.&#xA;It no longer measured resistance correctly.&#xA;For low resistances, the numbers looked alright, but with bigger resistances, the value didn&amp;rsquo;t go higher than about &lt;code&gt;40kΩ&lt;/code&gt;.&#xA;I only had one multimeter, so I didn&amp;rsquo;t have anything to compare against, so how did I determine that it&amp;rsquo;s broken for sure?&lt;/p&gt;&#xA;&lt;p&gt;It seemed to measure &lt;code&gt;1kΩ&lt;/code&gt; accurately, so I used Ohm&amp;rsquo;s Law and connected 10 of the &lt;code&gt;1kΩ&lt;/code&gt; resistors in series.&#xA;It read about &lt;code&gt;7kΩ&lt;/code&gt;. Uh, oh.&lt;/p&gt;&#xA;&lt;p&gt;I ordered a new one, same model.&#xA;I complained to my friends on Facebook and got some pity likes.&#xA;I didn&amp;rsquo;t know much about electronics, so I accepted that the old one is broken and only trusted the new one.&#xA;Until it broke as well. In a similar way.&lt;/p&gt;&#xA;&lt;p&gt;How did I break it?&#xA;To be honest, I don&amp;rsquo;t know.&#xA;I assume it was a user error.&#xA;If I had to guess I either tried to measure the resistance on a powered circuit or tried to measure current with the red lead still in the Voltage/Resistance socket.&lt;/p&gt;&#xA;&lt;p&gt;Last year I asked Santa for a different multimeter as I was tired of buying them myself.&#xA;After learning some more electronics theory I decided to take a look and try to fix it.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

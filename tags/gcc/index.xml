@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Gcc on Bartosz Nitka</title>
+    <link>http://niteria.github.io/tags/gcc/</link>
+    <description>Recent content in Gcc on Bartosz Nitka</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <managingEditor>niteria@gmail.com (Bartosz Nitka)</managingEditor>
+    <webMaster>niteria@gmail.com (Bartosz Nitka)</webMaster>
+    <copyright>&amp;copy; Copyright 2019 Bartosz Nitka</copyright>
+    <lastBuildDate>Sun, 19 Jul 2026 04:13:49 +0200</lastBuildDate>
+    <atom:link href="http://niteria.github.io/tags/gcc/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The Compiler Is Wrong</title>
+      <link>http://niteria.github.io/posts/the-compiler-is-wrong/</link>
+      <pubDate>Sun, 19 Jul 2026 04:13:49 +0200</pubDate><author>niteria@gmail.com (Bartosz Nitka)</author>
+      <guid>http://niteria.github.io/posts/the-compiler-is-wrong/</guid>
+      <description>&lt;aside class=&#34;clanker-note&#34; style=&#34;border-left: 3px solid #999; padding: 0.4em 0.9em; margin: 1em 0; font-size: 0.92em; color: #555;&#34;&gt;&#xA;  &lt;p style=&#34;margin: 0;&#34;&gt;&lt;strong&gt;How this post was written:&lt;/strong&gt;&#xA;  the experience, the work and the decisions are mine. I used a clanker (a coding agent) to turn my notes, commits and memories into a cohesive story, then reviewed it for accuracy. See &lt;a href=&#34;http://niteria.github.io/posts/why-its-frustrating-to-work-with-clankers/&#34;&gt;my series on working with clankers&lt;/a&gt;.&lt;/p&gt;&#xA;&lt;/aside&gt;&#xA;&#xA;&lt;p&gt;&amp;ldquo;It&amp;rsquo;s never the compiler&amp;rdquo; is a good rule.&#xA;My first task on a new team at Facebook was the exception.&#xA;It started with a crash in production and ended with a bug report against GCC.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 500" role="img" aria-labelledby="t d">
+  <title id="t">Redzones in an arena</title>
+  <desc id="d">Three rows of memory. Without redzones, a write that is 8 bytes too long lands in the next object and ASAN reports nothing. With a poisoned gap after each object, the same write lands in the gap and ASAN reports it. When two requests are handed the same address and ask for different sizes, the redzone of the smaller object lies inside the bigger one, and ASAN reports the write that crosses it.</desc>
+  <defs>
+    <pattern id="tape" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="8" height="8" fill="#d03b3b"/>
+      <rect width="3" height="8" fill="#a62626"/>
+    </pattern>
+    <style>
+      text { font-family: system-ui, -apple-system, "Segoe UI", "Helvetica Neue", sans-serif; font-size: 14px; fill: #52514e; }
+      .title { font-size: 16px; font-weight: 600; fill: #0b0b0b; }
+      .verdict { fill: #0b0b0b; }
+      .strong { font-weight: 600; }
+      .obj { fill: #256abf; }
+      .rz { fill: url(#tape); }
+      .free { fill: #f0efec; }
+      .in { fill: #ffffff; font-weight: 600; text-anchor: middle; }
+      .inrz { fill: #ffffff; font-weight: 600; text-anchor: middle; paint-order: stroke; stroke: #d03b3b; stroke-width: 4px; stroke-linejoin: round; }
+      .infree { text-anchor: middle; }
+      .mark { fill: none; stroke: #0b0b0b; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+      .rule { stroke: #e1e0d9; stroke-width: 1; }
+    </style>
+  </defs>
+
+  <!-- Row 1: no redzones -->
+  <text class="title" x="20" y="22">No redzones</text>
+  <text x="20" y="43">memset writes 24 bytes</text>
+  <path class="mark" d="M20 56 V51 H140 V56"/>
+  <rect class="obj" x="21" y="60" width="78" height="36" rx="3"/>
+  <rect class="obj" x="101" y="60" width="78" height="36" rx="3"/>
+  <rect class="free" x="181" y="60" width="358" height="36" rx="3"/>
+  <text class="in" x="60" y="83">name</text>
+  <text class="in" x="140" y="83">balance</text>
+  <text class="infree" x="360" y="83">not handed out yet</text>
+  <path class="mark" d="M101 100 V105 H140 V100"/>
+  <text x="101" y="123">8 bytes too many, and they land in balance</text>
+  <text class="verdict" x="20" y="146"><tspan class="strong">ASAN: no report.</tspan> To ASAN this is one valid block.</text>
+
+  <line class="rule" x1="20" y1="162" x2="540" y2="162"/>
+
+  <!-- Row 2: with redzones -->
+  <text class="title" x="20" y="188">With redzones</text>
+  <text x="20" y="209">the same write</text>
+  <path class="mark" d="M20 222 V217 H140 V222"/>
+  <rect class="obj" x="21" y="226" width="78" height="36" rx="3"/>
+  <rect class="rz" x="101" y="226" width="78" height="36" rx="3"/>
+  <rect class="obj" x="181" y="226" width="78" height="36" rx="3"/>
+  <rect class="rz" x="261" y="226" width="78" height="36" rx="3"/>
+  <rect class="free" x="341" y="226" width="198" height="36" rx="3"/>
+  <text class="in" x="60" y="249">name</text>
+  <text class="inrz" x="140" y="249">redzone</text>
+  <text class="in" x="220" y="249">balance</text>
+  <text class="inrz" x="300" y="249">redzone</text>
+  <text class="infree" x="440" y="249">not handed out yet</text>
+  <path class="mark" d="M101 266 V271 H140 V266"/>
+  <text x="101" y="289">8 bytes too many, and they land in a redzone</text>
+  <text class="verdict" x="20" y="312"><tspan class="strong">ASAN: use-after-poison,</tspan> at the line that wrote them.</text>
+
+  <line class="rule" x1="20" y1="328" x2="540" y2="328"/>
+
+  <!-- Row 3: two requests, one address -->
+  <text class="title" x="20" y="354">Two requests handed the same address</text>
+  <path class="mark" d="M20 377 V372 H180 V377"/>
+  <text x="188" y="377">request A: 32 bytes</text>
+  <path class="mark" d="M20 397 V392 H340 V397"/>
+  <text x="348" y="397">request B: 64 bytes</text>
+  <rect class="obj" x="21" y="401" width="158" height="36" rx="3"/>
+  <rect class="rz" x="181" y="401" width="78" height="36" rx="3"/>
+  <rect class="obj" x="261" y="401" width="78" height="36" rx="3"/>
+  <rect class="rz" x="341" y="401" width="78" height="36" rx="3"/>
+  <rect class="free" x="421" y="401" width="118" height="36" rx="3"/>
+  <text class="in" x="100" y="424">both lists</text>
+  <text class="inrz" x="220" y="424">redzone</text>
+  <text class="in" x="300" y="424">B's list</text>
+  <text class="inrz" x="380" y="424">redzone</text>
+  <path class="mark" d="M181 441 V446 H259 V441"/>
+  <text x="181" y="464">A's redzone is inside B's list, and B writes there</text>
+  <text class="verdict" x="20" y="487"><tspan class="strong">ASAN: use-after-poison,</tspan> but only when the sizes differ.</text>
+</svg>

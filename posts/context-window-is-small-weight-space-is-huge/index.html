@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>II. Context Window Is Small, Weight Space Is Huge: A Case for &#34;Sleep&#34; - Bartosz Nitka</title>
+  <meta property="og:title" content="II. Context Window Is Small, Weight Space Is Huge: A Case for &#34;Sleep&#34; - Bartosz Nitka" />
+  <meta name="twitter:title" content="II. Context Window Is Small, Weight Space Is Huge: A Case for &#34;Sleep&#34; …" />
+  <meta name="description" content="Part I ended with a limit. A clanker can keep exact project history outside of its context window, but that doesn&rsquo;t give it the taste and intuition of someone who has worked on the project for years.
+The context window is small, but weight space is huge.
+Humans don&rsquo;t keep everything they have learned in working memory. Sleep consolidates experience. Things that used to require conscious thought become intuition.
+What if a coding agent could do the same? Keep exact facts in source control and issue trackers, but periodically train project experience back into itself. I suggested that a long-running agent would need to sleep.">
+  <meta property="og:description" content="Part I ended with a limit. A clanker can keep exact project history outside of its context window, but that doesn&rsquo;t give it the taste and intuition of someone who has worked on the project for years.
+The context window is small, but weight space is huge.
+Humans don&rsquo;t keep everything they have learned in working memory. Sleep consolidates experience. Things that used to require conscious thought become intuition.
+What if a coding agent could do the same? Keep exact facts in source control and issue trackers, but periodically train project experience back into itself. I suggested that a long-running agent would need to sleep.">
+  <meta name="twitter:description" content="Part I ended with a limit. A clanker can keep exact project history outside of its context window, but that doesn&rsquo;t give it the taste and intuition of someone who has worked on the project for …">
+  <meta name="author" content="Bartosz Nitka"/>
+  <meta property="og:site_name" content="Bartosz Nitka" />
+  <meta property="og:url" content="http://niteria.github.io/posts/context-window-is-small-weight-space-is-huge/" />
+  <meta property="og:type" content="article" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="generator" content="Hugo 0.158.0">
+  <link rel="stylesheet" href="/css/style.css" media="all" />
+
+  <link rel="stylesheet" href="/css/syntax.css" media="all" />
+  <link rel="stylesheet" href="/css/custom.css" media="all" />
+
+  <script src="/js/script.js"></script>
+  <script src="/js/custom.js"></script>
+  <script defer src="/fontawesome/all.min.js"></script>
+</head>
+
+<body>
+
+<header class="site-header">
+  <nav class="site-navi">
+    <h1 class="site-title"><a href="/">Bartosz Nitka</a></h1>
+    <ul class="site-navi-items">
+      <li class="site-navi-item-archives"><a href="/archives/" title="Archives">Archives</a></li>
+      <li class="site-navi-item-about"><a href="/about/" title="About">About</a></li>
+    </ul>
+  </nav>
+</header>
+<hr class="site-header-bottom">
+
+  <div class="main" role="main">
+    <article class="article">
+      
+      <p class="article-title-series"><a href="/series/coding-agents-and-limits/">Coding Agents and Limits</a>&nbsp;/</p>
+      <h1 class="article-title">II. Context Window Is Small, Weight Space Is Huge: A Case for &#34;Sleep&#34;</h1>
+      
+      <hr class="article-title-bottom">
+      <ul class="article-meta">
+        <li class="article-meta-date"><time>July 19, 2026</time></li>
+        <li class="article-meta-tags">
+          <a href="/tags/ai/">
+            <i class="fa-solid fa-tag"></i>
+            AI
+          </a>&nbsp;
+        </li>
+        <li class="article-meta-tags">
+          <a href="/tags/software-engineering/">
+            <i class="fa-solid fa-tag"></i>
+            software-engineering
+          </a>&nbsp;
+        </li>
+      </ul>
+      
+<aside class="toc">
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#what-sleep-should-consolidate">What sleep should consolidate</a></li>
+    <li><a href="#a-plausible-memory-hierarchy">A plausible memory hierarchy</a></li>
+    <li><a href="#why-a-huge-weight-space-is-not-automatically-enough">Why a huge weight space is not automatically enough</a></li>
+    <li><a href="#what-this-changes-about-the-impossibility-argument">What this changes about the impossibility argument</a></li>
+  </ul>
+</nav>
+</aside>
+      <p><a href="http://niteria.github.io/posts/why-its-frustrating-to-work-with-clankers/">Part I</a> ended with a limit. A clanker can keep exact project history outside of its context window, but that doesn&rsquo;t give it the taste and intuition of someone who has worked on the project for years.</p>
+<p>The context window is small, but weight space is huge.</p>
+<p>Humans don&rsquo;t keep everything they have learned in working memory. Sleep consolidates experience. Things that used to require conscious thought become intuition.</p>
+<p>What if a coding agent could do the same? Keep exact facts in source control and issue trackers, but periodically train project experience back into itself. I suggested that a long-running agent would need to sleep.</p>
+<p>GPT-5.6 Sol agreed:</p>
+<hr>
+<p>Exactly. <strong>The missing operation is not better compaction but consolidation.</strong></p>
+<p>A context window is rapidly writable, high-fidelity, transient working memory. Weight space is slowly writable, distributed, compressed memory. Current coding agents mostly get the former while the latter remains frozen throughout the project. After compaction they retain a textual report of their experience, but they have not actually been changed by it.</p>
+<p>That is unlike a long-tenured engineer. The engineer does not remember every discussion verbatim, but the project changes their intuitions:</p>
+<ul>
+<li>certain abstractions begin to feel natural;</li>
+<li>certain apparently clean designs feel suspicious;</li>
+<li>they recognize which layer owns a responsibility;</li>
+<li>they anticipate the reviewers’ objections;</li>
+<li>they stop needing to recite the process because it has become habit.</li>
+</ul>
+<p>That is exactly the sort of information that belongs in weights rather than a prompt.</p>
+<blockquote>
+<p>Process in context is an instruction. Process in weights is a disposition.</p>
+</blockquote>
+<h2 id="what-sleep-should-consolidate">What sleep should consolidate</h2>
+<p>It should not try to memorize the repository byte-for-byte. Exact state is better kept in source control, tests, issues, and searchable history.</p>
+<p>Sleep should compile repeated experience into <strong>project-specific priors</strong>:</p>
+<ul>
+<li>the project’s conceptual vocabulary;</li>
+<li>its preferred abstraction level;</li>
+<li>which kinds of duplication are tolerated;</li>
+<li>where responsibilities normally live;</li>
+<li>accepted and rejected architectural moves;</li>
+<li>naming and decomposition taste;</li>
+<li>recurring failure modes;</li>
+<li>what maintainers tend to mean by “simple” or “clean.”</li>
+</ul>
+<p>Then local code would trigger those priors associatively without all of them being copied into the active context. A newly proposed abstraction might feel alien to the model for roughly the same distributed reasons it feels alien to an experienced maintainer.</p>
+<p>This addresses the problem from the previous turn. Taste cannot be formally verified, but it can be <strong>learned by apprenticeship</strong>. Accepted changes, rejected changes, review comments, reversions, and later consequences provide preference signals. Sleep would not prove that an architectural choice is right; it would make the agent inherit the project’s accumulated judgment about such choices.</p>
+<h2 id="a-plausible-memory-hierarchy">A plausible memory hierarchy</h2>
+<p>A durable coding agent probably needs several timescales rather than one giant context:</p>
+<table>
+  <thead>
+      <tr>
+          <th>Timescale</th>
+          <th>Mechanism</th>
+          <th>Contents</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Seconds to hours</td>
+          <td>Attention/KV context</td>
+          <td>Current investigation and exact nearby details</td>
+      </tr>
+      <tr>
+          <td>Hours to days</td>
+          <td>Fast weights or session adapter</td>
+          <td>Temporary task model and active hypotheses</td>
+      </tr>
+      <tr>
+          <td>Weeks to years</td>
+          <td>Versioned project adapter</td>
+          <td>Architecture, conventions, taste, recurring knowledge</td>
+      </tr>
+      <tr>
+          <td>Indefinite and exact</td>
+          <td>Repository and event store</td>
+          <td>Code, decisions, discussions, tests, provenance</td>
+      </tr>
+      <tr>
+          <td>Periodic offline phase</td>
+          <td>Sleep/consolidation</td>
+          <td>Transfer from experience into the slower levels</td>
+      </tr>
+  </tbody>
+</table>
+<p>The base foundation model should probably remain mostly frozen. Each project could have its own adapter, sparse experts, or other parameter partition. That provides isolation, versioning, rollback, and protection against one project degrading general capabilities.</p>
+<p>A sleep cycle might look like:</p>
+<ol>
+<li>Collect the day’s trajectories—not only final successful diffs, but review feedback, abandoned designs, test failures, and corrections.</li>
+<li>Determine which lessons recur and which are merely one-off facts.</li>
+<li>Generate contrastive examples: “this implementation was accepted; this locally plausible one was rejected because responsibility belonged elsewhere.”</li>
+<li>Replay older representative tasks so that new learning does not erase earlier project knowledge.</li>
+<li>Train the project-specific parameters.</li>
+<li>Evaluate on held-out historical decisions and fresh maintenance tasks.</li>
+<li>Activate the new adapter only when it improves the project model without known regressions.</li>
+</ol>
+<p>“Dreaming” would be useful here: generate variations of old architectural situations and rehearse choosing between alternatives. But unguided dreaming is dangerous because the model can rehearse and strengthen its own misconceptions. Human review outcomes and actual project history need to anchor it.</p>
+<h2 id="why-a-huge-weight-space-is-not-automatically-enough">Why a huge weight space is not automatically enough</h2>
+<p>Weights are not an empty filesystem. Their capacity is large, but they are:</p>
+<ul>
+<li>already occupied by broadly shared capabilities;</li>
+<li>distributed rather than cleanly addressable;</li>
+<li>changed indirectly through optimization;</li>
+<li>subject to interference and catastrophic forgetting;</li>
+<li>lossy rather than suitable for exact records;</li>
+<li>difficult to inspect for provenance;</li>
+<li>vulnerable to poisoned or mistaken experience.</li>
+</ul>
+<p>The hard problem is not merely <strong>where to store experience</strong>. It is deciding:</p>
+<blockquote>
+<p>What deserves consolidation, at what level of abstraction, with what confidence, and what existing knowledge must be replayed while learning it?</p>
+</blockquote>
+<p>This is why sleep is valuable. Online interaction is a poor time to perform that expensive selection and replay. Offline compute can revisit the full trace, compare it with history, generate counterexamples, evaluate candidate updates, and roll them back.</p>
+<p>There is already active research along precisely these lines. <a href="https://arxiv.org/html/2501.00663v1">Titans</a> uses a neural memory module whose parameters are updated at test time to compress historical context. A May 2026 paper titled <a href="https://arxiv.org/html/2605.26099v1"><em>Language Models Need Sleep</em></a> periodically converts context into persistent fast weights using offline recurrent processing before clearing the attention cache. A separate June 2026 paper, <a href="https://arxiv.org/html/2606.03979v1"><em>Language Models Need Sleep: Learning to Self-Modify and Consolidate Memories</em></a>, proposes alternating wake and sleep phases, using replay for consolidation and synthetic “dreaming” for further adaptation. These are still research demonstrations rather than a mature solution for multi-year software projects, but the architectural direction matches your observation closely.</p>
+<p>The empirical results also expose the cost: sleep-like recurrence moves computation out of the immediate prediction path, but training becomes sequential, more expensive, and potentially unstable. Continual fine-tuning still needs replay because new updates can cause representation drift and erase earlier capabilities. <a href="https://arxiv.org/html/2603.09892v1">MSSR</a> explores memory-aware adaptive replay for continual LLM fine-tuning.</p>
+<h2 id="what-this-changes-about-the-impossibility-argument">What this changes about the impossibility argument</h2>
+<p>Without sleep, the agent’s durable project knowledge is constrained to whatever survives textual compaction and retrieval. That is indeed inadequate for maintaining tacit architectural coherence.</p>
+<p>With sleep, a long history can affect future behavior without being explicitly present in the next context. The effective project state becomes:</p>
+<blockquote>
+<p><strong>current context</strong> + <strong>external exact memory</strong> + <strong>consolidated project parameters</strong></p>
+</blockquote>
+<p>The weights do not have to preserve every past event. They need to learn the regularities that allow the agent to interpret the current event correctly.</p>
+<p>This still does not permit literally arbitrary unbounded information. A finite model cannot losslessly absorb an indefinitely growing, incompressible history. But real projects are not supposed to be arbitrary bit streams. A coherent project contains repeated concepts, conventions, causal structures, and design preferences. Those regularities may be highly compressible into weights even when the complete repository is enormous.</p>
+<p>So sleep changes the relevant limit from:</p>
+<blockquote>
+<p>How much project history fits in the prompt?</p>
+</blockquote>
+<p>to:</p>
+<blockquote>
+<p>How much irreducible project complexity remains after its recurring structure has been learned?</p>
+</blockquote>
+<p>That is a much more favorable scaling law.</p>
+<p>The strongest formulation is therefore:</p>
+<blockquote>
+<p>Large-scale agentic software work requires not merely persistent memory, but persistent <strong>learning</strong>.</p>
+</blockquote>
+<p>Retrieval lets an agent consult the organization’s records. Sleep would let the organization’s history alter the kind of engineer the agent has become.</p>
+
+    </article>
+    <section class="article-series">
+      <h2 class="series-title"><a href="/series/coding-agents-and-limits/"><i class="fa-solid fa-book"></i>&nbsp;Coding Agents and Limits</a></h2>
+      <ol reversed="reversed" class="series">
+      </ol>
+    </section>
+
+    
+
+
+    <ul class="pager article-pager">
+      <li class="pager-newer">
+          <a href="/posts/dont-ossify-or-contract-ayahuasca/" data-toggle="tooltip" data-placement="top" title="III. Ayahuasca for Clankers">&lt; Newer</a>
+      </li>
+      <li class="pager-older">
+        <a href="/posts/why-its-frustrating-to-work-with-clankers/" data-toggle="tooltip" data-placement="top" title="I. Why It&#39;s Frustrating to Work With Clankers">Older &gt;</a>
+      </li>
+    </ul>
+  </div>
+
+
+<div class="site-footer">
+  <div class="copyright">&copy; Copyright 2019 Bartosz Nitka</div>
+  <ul class="site-footer-items">
+    <li class="site-footer-item-about"><a href="/about/" title="About">About</a></li>
+  </ul>
+  <div class="powerdby">
+    Powered by <a href="https://gohugo.io/">Hugo</a> and <a href="https://github.com/taikii/whiteplain">Whiteplain</a>
+  </div>
+</div>
+
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-P5EZCXRPMM"></script>
+      <script>
+        var doNotTrack = false;
+        if ( true ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-P5EZCXRPMM');
+        }
+      </script>
+
+</body>
+</html>

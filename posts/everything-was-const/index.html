@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>Everything Was Const - Bartosz Nitka</title>
+  <meta property="og:title" content="Everything Was Const - Bartosz Nitka" />
+  <meta name="twitter:title" content="Everything Was Const - Bartosz Nitka" />
+  <meta name="description" content="
+  How this post was written:
+  the experience, the work and the decisions are mine. I used a clanker (a coding agent) to turn my notes, commits and memories into a cohesive story, then reviewed it for accuracy. See my series on working with clankers.
+
+
+Our service had two arena allocators: one per request and one for constants.
+The constant one turned out not to be constant.">
+  <meta property="og:description" content="
+  How this post was written:
+  the experience, the work and the decisions are mine. I used a clanker (a coding agent) to turn my notes, commits and memories into a cohesive story, then reviewed it for accuracy. See my series on working with clankers.
+
+
+Our service had two arena allocators: one per request and one for constants.
+The constant one turned out not to be constant.">
+  <meta name="twitter:description" content="
+  How this post was written:
+  the experience, the work and the decisions are mine. I used a clanker (a coding agent) to turn my notes, commits and memories into a cohesive story, then reviewed it …">
+  <meta name="author" content="Bartosz Nitka"/>
+  <meta property="og:site_name" content="Bartosz Nitka" />
+  <meta property="og:url" content="http://niteria.github.io/posts/everything-was-const/" />
+  <meta property="og:type" content="article" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="generator" content="Hugo 0.158.0">
+  <link rel="stylesheet" href="/css/style.css" media="all" />
+
+  <link rel="stylesheet" href="/css/syntax.css" media="all" />
+  <link rel="stylesheet" href="/css/custom.css" media="all" />
+
+  <script src="/js/script.js"></script>
+  <script src="/js/custom.js"></script>
+  <script defer src="/fontawesome/all.min.js"></script>
+</head>
+
+<body>
+
+<header class="site-header">
+  <nav class="site-navi">
+    <h1 class="site-title"><a href="/">Bartosz Nitka</a></h1>
+    <ul class="site-navi-items">
+      <li class="site-navi-item-archives"><a href="/archives/" title="Archives">Archives</a></li>
+      <li class="site-navi-item-about"><a href="/about/" title="About">About</a></li>
+    </ul>
+  </nav>
+</header>
+<hr class="site-header-bottom">
+
+  <div class="main" role="main">
+    <article class="article">
+      
+      
+      <h1 class="article-title">Everything Was Const</h1>
+      
+      <hr class="article-title-bottom">
+      <ul class="article-meta">
+        <li class="article-meta-date"><time>July 20, 2026</time></li>
+        <li class="article-meta-tags">
+          <a href="/tags/asan/">
+            <i class="fa-solid fa-tag"></i>
+            asan
+          </a>&nbsp;
+        </li>
+        <li class="article-meta-tags">
+          <a href="/tags/debugging/">
+            <i class="fa-solid fa-tag"></i>
+            debugging
+          </a>&nbsp;
+        </li>
+        <li class="article-meta-tags">
+          <a href="/tags/software-engineering/">
+            <i class="fa-solid fa-tag"></i>
+            software-engineering
+          </a>&nbsp;
+        </li>
+      </ul>
+      
+<aside class="toc">
+  <nav id="TableOfContents"></nav>
+</aside>
+      <aside class="clanker-note" style="border-left: 3px solid #999; padding: 0.4em 0.9em; margin: 1em 0; font-size: 0.92em; color: #555;">
+  <p style="margin: 0;"><strong>How this post was written:</strong>
+  the experience, the work and the decisions are mine. I used a clanker (a coding agent) to turn my notes, commits and memories into a cohesive story, then reviewed it for accuracy. See <a href="http://niteria.github.io/posts/why-its-frustrating-to-work-with-clankers/">my series on working with clankers</a>.</p>
+</aside>
+
+<p>Our service had two arena allocators: one per request and one for constants.
+The constant one turned out not to be constant.</p>
+<h1 id="two-arenas">Two arenas</h1>
+<p>This is the service from <a href="http://niteria.github.io/posts/the-compiler-is-wrong/">The Compiler Is Wrong</a>.
+It used arena allocators.
+An arena is a suballocator that never frees, and its <code>malloc</code> is just a pointer increment.
+This is <a href="https://github.com/facebook/folly/blob/311c98eb62832be70d86cf949dc1e5127028b3ca/folly/Arena.h">folly&rsquo;s <code>Arena</code></a> as it was then:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> <span style="color:#a6e22e">allocate</span>(size_t size) {
+</span></span><span style="display:flex;"><span>  size <span style="color:#f92672">=</span> roundUp(size);
+</span></span><span style="display:flex;"><span>  bytesUsed_ <span style="color:#f92672">+=</span> size;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (LIKELY(end_ <span style="color:#f92672">-</span> ptr_ <span style="color:#f92672">&gt;=</span> size)) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Fast path: there&#39;s enough room in the current block
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> r <span style="color:#f92672">=</span> ptr_;
+</span></span><span style="display:flex;"><span>    ptr_ <span style="color:#f92672">+=</span> size;
+</span></span><span style="display:flex;"><span>    assert(isAligned(r));
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> r;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Not enough room in the current block
+</span></span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> r <span style="color:#f92672">=</span> allocateSlow(size);
+</span></span><span style="display:flex;"><span>  assert(isAligned(r));
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> r;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">deallocate</span>(<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> p) {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Deallocate? Never!
+</span></span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>All of the memory goes back at once, when the arena itself is destroyed.</p>
+<p>We had two of them.
+One lived as long as a request.
+The other was the &ldquo;constant&rdquo; arena, for data that was built once and then only read.</p>
+<p>There are no locks in that code.
+For a constant arena that should be fine, because nothing allocates from it once it has been filled.</p>
+<h1 id="random-corruption">Random corruption</h1>
+<p>The crashes were absolutely random memory corruption.
+The stack traces had nothing in common.</p>
+<p>This was more than ten years ago, so part of what follows is me reconstructing how I would have gone about it.
+I think I ran the service with a single thread, and it didn&rsquo;t crash.
+I think we could already build with ASAN by then, and ASAN found nothing.
+That made it most perplexing.</p>
+<p>It took a lot of undirected experiments.
+They left me with vague intuitions and a better understanding of the codebase.
+Then, outside work, came a sudden flash that made all the observations make sense.</p>
+<h1 id="the-tables-were-const">The tables were const</h1>
+<p>As I remember it, the team used <code>const</code> as much as it could.
+The constant tables were <code>const</code>, and the code that read them could not change them.
+It didn&rsquo;t change them.
+It changed the arena they lived in.</p>
+<p>I can&rsquo;t tell you the exact line any more.
+It was either a copy of a value fetched from a map, or a key constructed for a lookup.
+The copy is enough to show the mechanism:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span>, StlAllocator<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">&gt;</span> Ints;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> std<span style="color:#f92672">::</span>map<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span>, Ints, std<span style="color:#f92672">::</span>less<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span>,
+</span></span><span style="display:flex;"><span>                 StlAllocator<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">::</span>pair<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span>, Ints<span style="color:#f92672">&gt;</span> <span style="color:#f92672">&gt;</span> <span style="color:#f92672">&gt;</span> Table;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// A request looks a list up in the constant table and adds it up.
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">long</span> <span style="color:#a6e22e">request</span>(<span style="color:#66d9ef">const</span> Table<span style="color:#f92672">&amp;</span> table, <span style="color:#66d9ef">int</span> key) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> Ints ints <span style="color:#f92672">=</span> table.find(key)<span style="color:#f92672">-&gt;</span>second;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">long</span> sum <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (size_t i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> ints.size(); i<span style="color:#f92672">++</span>) sum <span style="color:#f92672">+=</span> ints[i];
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> sum;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><code>table</code> is a const reference, <code>find</code> is a const member function and <code>ints</code> is a const local.
+Nothing here can change the table, and nothing does.
+But <code>ints</code> is a copy, a copy needs memory, and a copy of a container asks the allocator of the original for it.
+The allocator is a pointer to the arena, and constness stops at that pointer.</p>
+<p>I don&rsquo;t have the original code.
+I had a clanker write the smallest complete program with that shape: a table in an arena, built by one thread at startup, then read by requests on several threads.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;atomic&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cstdio&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cstdlib&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;map&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;memory&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;thread&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;vector&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Like folly::Arena: allocating is a pointer increment, nothing is freed,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// and there are no locks.
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Arena</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> ptr_;
+</span></span><span style="display:flex;"><span>  std<span style="color:#f92672">::</span>atomic<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">long</span><span style="color:#f92672">&gt;</span> calls;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">explicit</span> <span style="color:#a6e22e">Arena</span>(size_t size)
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">:</span> ptr_(<span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">char</span><span style="color:#f92672">*&gt;</span>(malloc(size))), calls(<span style="color:#ae81ff">0</span>) {}
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> <span style="color:#a6e22e">allocate</span>(size_t size) {
+</span></span><span style="display:flex;"><span>    calls<span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> r <span style="color:#f92672">=</span> ptr_;
+</span></span><span style="display:flex;"><span>    ptr_ <span style="color:#f92672">+=</span> (size <span style="color:#f92672">+</span> <span style="color:#ae81ff">15</span>) <span style="color:#f92672">&amp;</span> <span style="color:#f92672">~</span>size_t(<span style="color:#ae81ff">15</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> r;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Like folly::StlAllocator: lets a standard container allocate from an arena.
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">T</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">StlAllocator</span> <span style="color:#f92672">:</span> std<span style="color:#f92672">::</span>allocator<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span>  Arena<span style="color:#f92672">*</span> alloc_;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">explicit</span> <span style="color:#a6e22e">StlAllocator</span>(Arena<span style="color:#f92672">*</span> a) <span style="color:#f92672">:</span> alloc_(a) {}
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">U</span><span style="color:#f92672">&gt;</span> StlAllocator(<span style="color:#66d9ef">const</span> StlAllocator<span style="color:#f92672">&lt;</span>U<span style="color:#f92672">&gt;&amp;</span> o) <span style="color:#f92672">:</span> alloc_(o.alloc_) {}
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">U</span><span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">rebind</span> { <span style="color:#66d9ef">typedef</span> StlAllocator<span style="color:#f92672">&lt;</span>U<span style="color:#f92672">&gt;</span> other; };
+</span></span><span style="display:flex;"><span>  T<span style="color:#f92672">*</span> <span style="color:#a6e22e">allocate</span>(size_t n, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>T<span style="color:#f92672">*&gt;</span>(alloc_<span style="color:#f92672">-&gt;</span>allocate(n <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(T)));
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">deallocate</span>(T<span style="color:#f92672">*</span>, size_t) {}  <span style="color:#75715e">// Deallocate? Never!
+</span></span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">T</span>, <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">U</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">bool</span> <span style="color:#66d9ef">operator</span><span style="color:#f92672">==</span>(<span style="color:#66d9ef">const</span> StlAllocator<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;&amp;</span> a, <span style="color:#66d9ef">const</span> StlAllocator<span style="color:#f92672">&lt;</span>U<span style="color:#f92672">&gt;&amp;</span> b) { <span style="color:#66d9ef">return</span> a.alloc_ <span style="color:#f92672">==</span> b.alloc_; }
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">template</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">T</span>, <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">U</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">bool</span> <span style="color:#66d9ef">operator</span><span style="color:#f92672">!=</span>(<span style="color:#66d9ef">const</span> StlAllocator<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;&amp;</span> a, <span style="color:#66d9ef">const</span> StlAllocator<span style="color:#f92672">&lt;</span>U<span style="color:#f92672">&gt;&amp;</span> b) { <span style="color:#66d9ef">return</span> a.alloc_ <span style="color:#f92672">!=</span> b.alloc_; }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span>, StlAllocator<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">&gt;</span> Ints;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> std<span style="color:#f92672">::</span>map<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span>, Ints, std<span style="color:#f92672">::</span>less<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span>,
+</span></span><span style="display:flex;"><span>                 StlAllocator<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">::</span>pair<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span>, Ints<span style="color:#f92672">&gt;</span> <span style="color:#f92672">&gt;</span> <span style="color:#f92672">&gt;</span> Table;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// A request looks a list up in the constant table and adds it up.
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">long</span> <span style="color:#a6e22e">request</span>(<span style="color:#66d9ef">const</span> Table<span style="color:#f92672">&amp;</span> table, <span style="color:#66d9ef">int</span> key) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> Ints ints <span style="color:#f92672">=</span> table.find(key)<span style="color:#f92672">-&gt;</span>second;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">long</span> sum <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (size_t i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> ints.size(); i<span style="color:#f92672">++</span>) sum <span style="color:#f92672">+=</span> ints[i];
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> sum;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span><span style="color:#f92672">**</span> argv) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> nthreads <span style="color:#f92672">=</span> argc <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">?</span> atoi(argv[<span style="color:#ae81ff">1</span>]) <span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>  Arena constants(<span style="color:#ae81ff">256</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">20</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Startup: one thread builds the table. After that it is only used as const.
+</span></span></span><span style="display:flex;"><span>  Table building((std<span style="color:#f92672">::</span>less<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span>()),
+</span></span><span style="display:flex;"><span>                 StlAllocator<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">::</span>pair<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span>, Ints<span style="color:#f92672">&gt;</span> <span style="color:#f92672">&gt;</span>(<span style="color:#f92672">&amp;</span>constants));
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> key <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; key <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">100</span>; key<span style="color:#f92672">++</span>)
+</span></span><span style="display:flex;"><span>    building.insert(
+</span></span><span style="display:flex;"><span>        std<span style="color:#f92672">::</span>make_pair(key, Ints(<span style="color:#ae81ff">8</span>, key, StlAllocator<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span>(<span style="color:#f92672">&amp;</span>constants))));
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> Table<span style="color:#f92672">&amp;</span> table <span style="color:#f92672">=</span> building;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">long</span> atStartup <span style="color:#f92672">=</span> constants.calls;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Requests: the list stored under `key` is eight times `key`.
+</span></span></span><span style="display:flex;"><span>  std<span style="color:#f92672">::</span>atomic<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">long</span><span style="color:#f92672">&gt;</span> wrong(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>  std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">::</span><span style="color:#66d9ef">thread</span><span style="color:#f92672">&gt;</span> threads;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> t <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; t <span style="color:#f92672">&lt;</span> nthreads; t<span style="color:#f92672">++</span>)
+</span></span><span style="display:flex;"><span>    threads.emplace_back([<span style="color:#f92672">&amp;</span>table, <span style="color:#f92672">&amp;</span>wrong] {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">1000000</span>; i<span style="color:#f92672">++</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (request(table, i <span style="color:#f92672">%</span> <span style="color:#ae81ff">100</span>) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">8</span> <span style="color:#f92672">*</span> (i <span style="color:#f92672">%</span> <span style="color:#ae81ff">100</span>)) wrong<span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (size_t t <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; t <span style="color:#f92672">&lt;</span> threads.size(); t<span style="color:#f92672">++</span>) threads[t].join();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  printf(<span style="color:#e6db74">&#34;allocations at startup:  %ld</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, atStartup);
+</span></span><span style="display:flex;"><span>  printf(<span style="color:#e6db74">&#34;allocations by requests: %ld</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, constants.calls <span style="color:#f92672">-</span> atStartup);
+</span></span><span style="display:flex;"><span>  printf(<span style="color:#e6db74">&#34;wrong answers:           %ld</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, wrong.load());
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><pre tabindex="0"><code>$ g++ -std=c++11 -O2 -pthread const_map.cpp
+$ ./a.out 1
+allocations at startup:  200
+allocations by requests: 1000000
+wrong answers:           0
+$ ./a.out 4
+allocations at startup:  200
+allocations by requests: 4000000
+wrong answers:           47114
+</code></pre><p>With one thread, a million requests take a million allocations out of the constant arena and every answer is right.
+That is my single-threaded run without crashes.</p>
+<p>With four threads the arena hands the same memory to two requests at once, and one of them adds up the other&rsquo;s list.
+The number of wrong answers is different on every run: 47,114, then 33,089, then 55,640.
+In this program the damage is a wrong sum.
+In a service full of pointers it is a crash somewhere else, later.</p>
+<p>C++ was different then, so I also built it with GCC 4.8.5, the compiler from the previous post.
+It behaves the same.</p>
+<p>The copy doesn&rsquo;t even have to look like one:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">const</span> std<span style="color:#f92672">::</span>pair<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span>, Ints<span style="color:#f92672">&gt;&amp;</span> entry : table) sum <span style="color:#f92672">+=</span> entry.second.size();
+</span></span></code></pre></div><p>The elements of the map are <code>std::pair&lt;const int, Ints&gt;</code>.
+This loop asks for <code>std::pair&lt;int, Ints&gt;</code>, so every element is converted, and the conversion copies the list: one allocation from the constant arena for each entry on each pass.
+Today&rsquo;s GCC warns about that line with <code>-Wall</code>.
+GCC 4.8.5 compiles it without a word.</p>
+<h1 id="the-fix">The fix</h1>
+<p>We forced those copies onto the right allocator.
+In the program above that is one line: the copy is told which arena to use.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">long</span> <span style="color:#a6e22e">request</span>(<span style="color:#66d9ef">const</span> Table<span style="color:#f92672">&amp;</span> table, <span style="color:#66d9ef">int</span> key, Arena<span style="color:#f92672">*</span> requestArena) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> Ints ints(table.find(key)<span style="color:#f92672">-&gt;</span>second, StlAllocator<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span>(requestArena));
+</span></span></code></pre></div><pre tabindex="0"><code>$ ./a.out 4
+allocations at startup:  200
+allocations by requests: 0
+wrong answers:           0
+</code></pre><p>The counter only watches the constant arena, and here every thread has an arena of its own standing in for the per-request one.</p>
+<p>C++11 also has a hook for choosing the allocator of a copy, <code>select_on_container_copy_construction</code>.
+Its default is the allocator of the original, and I don&rsquo;t remember whether we touched it.
+The <code>std::pmr</code> containers that came with C++17 made the other choice: a copy gets the default memory resource, not the arena of the original.</p>
+<h1 id="what-asan-cant-see">What ASAN can&rsquo;t see</h1>
+<p>ASAN is awesome.
+ASAN is why C++ is bearable.
+AddressSanitizer arrived in <a href="https://gcc.gnu.org/gcc-4.8/changes.html">GCC 4.8</a>, and it had nothing to say about any of this.
+Built with <code>-fsanitize=address</code>, the unfixed program still gets a few answers wrong on most runs, and ASAN reports nothing.</p>
+<p>ASAN isn&rsquo;t very useful with suballocators.
+It knows which memory is valid because it sees every <code>malloc</code> and <code>free</code>.
+An arena takes one big block from <code>malloc</code> and hands out pieces of it on its own.
+To ASAN the whole block is a single valid allocation, so whatever goes wrong inside it looks fine.
+Nothing is ever freed either, so there is no use after free to catch.</p>
+<p>The simplest case is a write that runs off the end of one object and into the next:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cstdio&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cstdlib&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cstring&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sanitizer/asan_interface.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Arena</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> block_;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> ptr_;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">explicit</span> <span style="color:#a6e22e">Arena</span>(size_t size)
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">:</span> block_(<span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">char</span><span style="color:#f92672">*&gt;</span>(malloc(size))), ptr_(block_) {}
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">~</span>Arena() { free(block_); }
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> <span style="color:#a6e22e">allocate</span>(size_t size) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> r <span style="color:#f92672">=</span> ptr_;
+</span></span><span style="display:flex;"><span>    ptr_ <span style="color:#f92672">+=</span> (size <span style="color:#f92672">+</span> <span style="color:#ae81ff">15</span>) <span style="color:#f92672">&amp;</span> <span style="color:#f92672">~</span>size_t(<span style="color:#ae81ff">15</span>);
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#ifdef REDZONES
+</span></span></span><span style="display:flex;"><span>    ptr_ <span style="color:#f92672">+=</span> <span style="color:#ae81ff">16</span>;  <span style="color:#75715e">// a gap after the object, off limits to everyone
+</span></span></span><span style="display:flex;"><span>    ASAN_POISON_MEMORY_REGION(r <span style="color:#f92672">+</span> size, ptr_ <span style="color:#f92672">-</span> (r <span style="color:#f92672">+</span> size));
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#endif
+</span></span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> r;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>  Arena arena(<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#ae81ff">20</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> name <span style="color:#f92672">=</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">char</span><span style="color:#f92672">*&gt;</span>(arena.allocate(<span style="color:#ae81ff">16</span>));
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">long</span><span style="color:#f92672">*</span> balance <span style="color:#f92672">=</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">long</span><span style="color:#f92672">*&gt;</span>(arena.allocate(<span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">long</span>)));
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">*</span>balance <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span>;
+</span></span><span style="display:flex;"><span>  memset(name, <span style="color:#e6db74">&#39;A&#39;</span>, <span style="color:#ae81ff">24</span>);  <span style="color:#75715e">// 8 bytes too many
+</span></span></span><span style="display:flex;"><span>  printf(<span style="color:#e6db74">&#34;balance = %ld</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, <span style="color:#f92672">*</span>balance);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><pre tabindex="0"><code>$ g++ -g -fsanitize=address redzone.cpp &amp;&amp; ./a.out
+balance = 4702111234474983745
+</code></pre><p>The <code>memset</code> writes 8 bytes too many, <code>balance</code> is garbage, and ASAN has nothing to say.</p>
+<h1 id="redzones">Redzones</h1>
+<p>But you can plug in and help ASAN help you.
+ASAN lets a program mark memory as off limits by hand, with <code>ASAN_POISON_MEMORY_REGION</code> from <code>&lt;sanitizer/asan_interface.h&gt;</code>.
+An arena can leave a gap after every object it hands out and poison it.
+That gap is a redzone.
+In the example above it is the two lines under <code>#ifdef REDZONES</code>.</p>
+<figure><img src="/static/redzones/redzones.svg"
+    alt="Three rows of arena memory: an overflow without redzones, the same overflow with redzones, and two requests that were handed the same address." width="640">
+</figure>
+
+<p>With them, the same overflow is an error at the line that caused it:</p>
+<pre tabindex="0"><code>$ g++ -g -fsanitize=address -DREDZONES redzone.cpp &amp;&amp; ./a.out
+==1211949==ERROR: AddressSanitizer: use-after-poison on address 0x7bb859add810
+WRITE of size 24 at 0x7bb859add810 thread T0
+    #0 0x7fb85b11e6e9 in memset
+    #1 0x558a3f0922fb in main redzone.cpp:28
+</code></pre><p>The macro compiles to nothing when ASAN is off.</p>
+<p>Redzones also catch the bug from this post, some of the time.
+When two requests are handed the same address and ask for different sizes, the redzone of the smaller object ends up inside the bigger one.
+The request that owns the bigger one writes there, and ASAN stops it.</p>
+<p>I took the unfixed program, gave its lists different lengths, added the same two lines to its arena and ran it with four threads:</p>
+<pre tabindex="0"><code>==1200332==ERROR: AddressSanitizer: use-after-poison on address 0x7bae74557a50
+WRITE of size 4 at 0x7bae74557a50 thread T2
+    #3 std::vector&lt;int, StlAllocator&lt;int&gt; &gt;::vector(std::vector&lt;int, StlAllocator&lt;int&gt; &gt; const&amp;)
+    #4 request(std::map&lt;...&gt; const&amp;, int)
+0x7bae74557a50 is located 1409616 bytes inside of 268435456-byte region
+allocated by thread T0 here:
+    #0 malloc
+    #1 Arena::Arena(unsigned long)
+    #2 main
+</code></pre><p>A request is writing into the block that <code>main</code> allocated for the constant arena.
+That report points at the bug.</p>
+<p>It is not deterministic, because it takes a collision between two requests that ask for different sizes.
+This program collides thousands of times per run, and it stopped like this in twelve runs out of twelve.
+With all the lists the same length it stopped in none of twelve: the two redzones line up, and nobody steps on anything.</p>
+<h1 id="the-other-sanitizer">The other sanitizer</h1>
+<p>ThreadSanitizer arrived in the same GCC 4.8, and it sees the cause where redzones see the damage.
+On the first program it points at the two lines of <code>allocate</code> that touch <code>ptr_</code>, and at the copy that led there:</p>
+<pre tabindex="0"><code>$ g++ -std=c++11 -O1 -g -pthread -fsanitize=thread const_map.cpp &amp;&amp; ./a.out 4
+WARNING: ThreadSanitizer: data race
+  Read of size 8 by thread T2:
+    #0 Arena::allocate(unsigned long) const_map.cpp:18
+    #6 std::vector&lt;int, StlAllocator&lt;int&gt; &gt;::vector(std::vector&lt;int, StlAllocator&lt;int&gt; &gt; const&amp;)
+    #7 request(std::map&lt;...&gt; const&amp;, int) const_map.cpp:47
+  Previous write of size 8 by thread T1:
+    #0 Arena::allocate(unsigned long) const_map.cpp:19
+    #6 std::vector&lt;int, StlAllocator&lt;int&gt; &gt;::vector(std::vector&lt;int, StlAllocator&lt;int&gt; &gt; const&amp;)
+    #7 request(std::map&lt;...&gt; const&amp;, int) const_map.cpp:47
+</code></pre><h1 id="a-draft-i-never-merged">A draft I never merged</h1>
+<p>I wrote redzones for <code>folly::Arena</code> at the time.
+It stayed a draft in our code review tool, and I used it for debugging.
+I never pushed to merge it.</p>
+<p>Redzones cost memory, a gap after every object, and I think that is why.
+<code>folly::Arena</code> also wasn&rsquo;t my team&rsquo;s core responsibility, and maybe I wasn&rsquo;t brave enough to change that code for everyone.
+And the code that needed it was dying.
+It was the interpreter for FXL, the language our rules were written in, and FXL was about to be replaced with Haskell.
+We were already migrating the service to <a href="https://github.com/facebook/Haxl">Haxl</a>.
+There the nursery of the garbage collector takes the place of the arena, and the runtime is strong.</p>
+<p>As far as I can tell, folly&rsquo;s <code>Arena</code> still has no such hooks today.</p>
+<h1 id="if-you-implement-a-suballocator">If you implement a suballocator</h1>
+<p>Consider redzoning support.
+It is a few lines in the allocator, and it decides whether ASAN can see anything that lives inside it.</p>
+    </article>
+
+    
+
+
+    <ul class="pager article-pager">
+      <li class="pager-newer">
+          <a href="/posts/what-would-you-do-if-you-werent-afraid/" data-toggle="tooltip" data-placement="top" title="What Would You Do if You Weren&#39;t Afraid?">&lt; Newer</a>
+      </li>
+      <li class="pager-older">
+        <a href="/posts/the-compiler-is-wrong/" data-toggle="tooltip" data-placement="top" title="The Compiler Is Wrong">Older &gt;</a>
+      </li>
+    </ul>
+  </div>
+
+
+<div class="site-footer">
+  <div class="copyright">&copy; Copyright 2019 Bartosz Nitka</div>
+  <ul class="site-footer-items">
+    <li class="site-footer-item-about"><a href="/about/" title="About">About</a></li>
+  </ul>
+  <div class="powerdby">
+    Powered by <a href="https://gohugo.io/">Hugo</a> and <a href="https://github.com/taikii/whiteplain">Whiteplain</a>
+  </div>
+</div>
+
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-P5EZCXRPMM"></script>
+      <script>
+        var doNotTrack = false;
+        if ( true ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-P5EZCXRPMM');
+        }
+      </script>
+
+</body>
+</html>

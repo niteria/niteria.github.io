@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 300" role="img" aria-labelledby="t d">
+  <title id="t">From an address in gdb to an offset in the file</title>
+  <desc id="d">The program's file is drawn as four pieces: headers, code, constants and data. Below it the same four pieces are drawn where they sit in the running process. The code sits at offset 0x1000 in the file and at address 0x555555555000 in memory, and the jump is 0x91 bytes into it in both. The data sits at offset 0x2d80 in the file and at address 0x555555557d80 in memory, so it is further from the code in memory than in the file. Address in gdb, minus the start of the mapping, plus the mapping's offset in the file, gives the offset to patch: 0x1091.</desc>
+  <defs>
+    <style>
+      text { font-family: system-ui, -apple-system, "Segoe UI", "Helvetica Neue", sans-serif; font-size: 14px; fill: #52514e; }
+      .title { font-size: 16px; font-weight: 600; fill: #0b0b0b; }
+      .ink { fill: #0b0b0b; }
+      .strong { font-weight: 600; }
+      .end { text-anchor: end; }
+      .code { fill: #256abf; }
+      .other { fill: #f0efec; }
+      .in { fill: #ffffff; font-weight: 600; text-anchor: middle; }
+      .inother { text-anchor: middle; }
+      .tick { font-size: 12.5px; }
+      .jump { fill: #d03b3b; }
+      .lead { fill: none; stroke: #0b0b0b; stroke-width: 1.5; stroke-linecap: round; }
+    </style>
+  </defs>
+
+  <!-- the file -->
+  <text class="title" x="20" y="22">In the file</text>
+  <text class="end" x="540" y="22">the linker decides this layout</text>
+  <text class="ink" x="128" y="44">the jump: <tspan class="strong">0x1091</tspan></text>
+  <rect class="other" x="21" y="54" width="94" height="36" rx="3"/>
+  <rect class="code" x="117" y="54" width="94" height="36" rx="3"/>
+  <rect class="other" x="213" y="54" width="94" height="36" rx="3"/>
+  <rect class="other" x="309" y="54" width="94" height="36" rx="3"/>
+  <rect class="jump" x="120" y="50" width="3" height="44"/>
+  <text class="inother" x="68" y="77">headers</text>
+  <text class="in" x="166" y="77">code</text>
+  <text class="inother" x="260" y="77">constants</text>
+  <text class="inother" x="356" y="77">data</text>
+  <text class="tick" x="21" y="108">0x0</text>
+  <text class="tick" x="126" y="108">0x1000</text>
+  <text class="tick" x="213" y="108">0x2000</text>
+  <text class="tick" x="309" y="108">0x2d80</text>
+
+  <!-- the process -->
+  <text class="title" x="20" y="146">In the running process</text>
+  <text class="end" x="540" y="146">the loader decides where it starts</text>
+  <text class="ink" x="128" y="168">the jump: <tspan class="strong">0x555555555091</tspan></text>
+  <rect class="other" x="21" y="178" width="94" height="36" rx="3"/>
+  <rect class="code" x="117" y="178" width="94" height="36" rx="3"/>
+  <rect class="other" x="213" y="178" width="94" height="36" rx="3"/>
+  <rect class="other" x="405" y="178" width="94" height="36" rx="3"/>
+  <rect class="jump" x="120" y="174" width="3" height="44"/>
+  <text class="inother" x="68" y="201">headers</text>
+  <text class="in" x="166" y="201">code</text>
+  <text class="inother" x="260" y="201">constants</text>
+  <text class="inother" x="452" y="201">data</text>
+  <text class="tick" x="126" y="232">0x555555555000</text>
+  <text class="tick" x="405" y="232">0x555555557d80</text>
+
+  <!-- the arithmetic -->
+  <text class="ink strong" x="20" y="268">0x555555555091 − 0x555555555000 + 0x1000 = 0x1091</text>
+  <text x="20" y="288">address in gdb − where the code starts in memory + where it starts in the file</text>
+</svg>

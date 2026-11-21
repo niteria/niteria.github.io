@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Ghci on Bartosz Nitka</title>
+    <link>http://niteria.github.io/tags/ghci/</link>
+    <description>Recent content in Ghci on Bartosz Nitka</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <managingEditor>niteria@gmail.com (Bartosz Nitka)</managingEditor>
+    <webMaster>niteria@gmail.com (Bartosz Nitka)</webMaster>
+    <copyright>&amp;copy; Copyright 2019 Bartosz Nitka</copyright>
+    <lastBuildDate>Mon, 04 May 2020 01:03:09 +0200</lastBuildDate>
+    <atom:link href="http://niteria.github.io/tags/ghci/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Quick Haskell Trick</title>
+      <link>http://niteria.github.io/posts/quick-haskell-trick/</link>
+      <pubDate>Mon, 04 May 2020 01:03:09 +0200</pubDate><author>niteria@gmail.com (Bartosz Nitka)</author>
+      <guid>http://niteria.github.io/posts/quick-haskell-trick/</guid>
+      <description>&lt;p&gt;The Haskell REPL (Read Print Eval Loop) - GHC interpreter, &lt;code&gt;ghci&lt;/code&gt; invoked with:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ ghci&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;or:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ stack repl&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;or:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ cabal new-repl &#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;or:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ cabal repl&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;is an environment enabling fast iteration.&lt;/p&gt;&#xA;&lt;p&gt;You can test a particular function and that&amp;rsquo;s cool and all, but you can&#xA;also run an entire program in the interpreter.&#xA;You do that with:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;ghci&amp;gt; :main&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;or&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;ghci&amp;gt; main&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The flow is as follows:&lt;/p&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;You make some changes in your editor&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;You &lt;code&gt;:r&lt;/code&gt; or &lt;code&gt;:reload&lt;/code&gt;&lt;/li&gt;&#xA;&lt;li&gt;You make some more changes to make it compile&lt;/li&gt;&#xA;&lt;li&gt;You &lt;code&gt;:r&lt;/code&gt; again&lt;/li&gt;&#xA;&lt;li&gt;You run &lt;code&gt;:main&lt;/code&gt; to play around with your program&lt;/li&gt;&#xA;&lt;li&gt;You &lt;code&gt;Ctrl-C&lt;/code&gt; to kill the program&lt;/li&gt;&#xA;&lt;li&gt;Go back to step one&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;What&amp;rsquo;s a little inefficient is that to run your new version of a program you&#xA;have to issue two commands: &lt;code&gt;:r&lt;/code&gt; and &lt;code&gt;:main&lt;/code&gt;.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

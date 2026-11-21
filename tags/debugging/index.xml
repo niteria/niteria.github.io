@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Debugging on Bartosz Nitka</title>
+    <link>http://niteria.github.io/tags/debugging/</link>
+    <description>Recent content in Debugging on Bartosz Nitka</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <managingEditor>niteria@gmail.com (Bartosz Nitka)</managingEditor>
+    <webMaster>niteria@gmail.com (Bartosz Nitka)</webMaster>
+    <copyright>&amp;copy; Copyright 2019 Bartosz Nitka</copyright>
+    <lastBuildDate>Thu, 23 Jul 2026 04:13:49 +0200</lastBuildDate>
+    <atom:link href="http://niteria.github.io/tags/debugging/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>A Picture Is Worth 1024³ WORDs</title>
+      <link>http://niteria.github.io/posts/a-picture-is-worth-1024-words/</link>
+      <pubDate>Thu, 23 Jul 2026 04:13:49 +0200</pubDate><author>niteria@gmail.com (Bartosz Nitka)</author>
+      <guid>http://niteria.github.io/posts/a-picture-is-worth-1024-words/</guid>
+      <description>&lt;aside class=&#34;clanker-note&#34; style=&#34;border-left: 3px solid #999; padding: 0.4em 0.9em; margin: 1em 0; font-size: 0.92em; color: #555;&#34;&gt;&#xA;  &lt;p style=&#34;margin: 0;&#34;&gt;&lt;strong&gt;How this post was written:&lt;/strong&gt;&#xA;  the experience, the work and the decisions are mine. I used a clanker (a coding agent) to turn my notes, commits and memories into a cohesive story, then reviewed it for accuracy. See &lt;a href=&#34;http://niteria.github.io/posts/why-its-frustrating-to-work-with-clankers/&#34;&gt;my series on working with clankers&lt;/a&gt;.&lt;/p&gt;&#xA;&lt;/aside&gt;&#xA;&#xA;&lt;p&gt;Sigma loaded new Haskell code while it was running.&#xA;After a while it couldn&amp;rsquo;t load any more.&#xA;The memory wasn&amp;rsquo;t full.&#xA;It was fragmented.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>That One Time It Was Glibc</title>
+      <link>http://niteria.github.io/posts/that-one-time-it-was-glibc/</link>
+      <pubDate>Wed, 22 Jul 2026 04:13:49 +0200</pubDate><author>niteria@gmail.com (Bartosz Nitka)</author>
+      <guid>http://niteria.github.io/posts/that-one-time-it-was-glibc/</guid>
+      <description>&lt;aside class=&#34;clanker-note&#34; style=&#34;border-left: 3px solid #999; padding: 0.4em 0.9em; margin: 1em 0; font-size: 0.92em; color: #555;&#34;&gt;&#xA;  &lt;p style=&#34;margin: 0;&#34;&gt;&lt;strong&gt;How this post was written:&lt;/strong&gt;&#xA;  the experience, the work and the decisions are mine. I used a clanker (a coding agent) to turn my notes, commits and memories into a cohesive story, then reviewed it for accuracy. See &lt;a href=&#34;http://niteria.github.io/posts/why-its-frustrating-to-work-with-clankers/&#34;&gt;my series on working with clankers&lt;/a&gt;.&lt;/p&gt;&#xA;&lt;/aside&gt;&#xA;&#xA;&lt;p&gt;Four years after &lt;a href=&#34;http://niteria.github.io/posts/the-compiler-is-wrong/&#34;&gt;the compiler was wrong&lt;/a&gt;, almost to the day, it was glibc.&#xA;And glibc had already fixed it, four years earlier.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>What Would You Do if You Weren&#39;t Afraid?</title>
+      <link>http://niteria.github.io/posts/what-would-you-do-if-you-werent-afraid/</link>
+      <pubDate>Tue, 21 Jul 2026 04:13:49 +0200</pubDate><author>niteria@gmail.com (Bartosz Nitka)</author>
+      <guid>http://niteria.github.io/posts/what-would-you-do-if-you-werent-afraid/</guid>
+      <description>&lt;aside class=&#34;clanker-note&#34; style=&#34;border-left: 3px solid #999; padding: 0.4em 0.9em; margin: 1em 0; font-size: 0.92em; color: #555;&#34;&gt;&#xA;  &lt;p style=&#34;margin: 0;&#34;&gt;&lt;strong&gt;How this post was written:&lt;/strong&gt;&#xA;  the experience, the work and the decisions are mine. I used a clanker (a coding agent) to turn my notes, commits and memories into a cohesive story, then reviewed it for accuracy. See &lt;a href=&#34;http://niteria.github.io/posts/why-its-frustrating-to-work-with-clankers/&#34;&gt;my series on working with clankers&lt;/a&gt;.&lt;/p&gt;&#xA;&lt;/aside&gt;&#xA;&#xA;&lt;p&gt;A service I worked on hit a time bomb, and the whole service went down.&#xA;I tried to fix it by patching the binary on every machine.&#xA;I didn&amp;rsquo;t pull it off in time.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Everything Was Const</title>
+      <link>http://niteria.github.io/posts/everything-was-const/</link>
+      <pubDate>Mon, 20 Jul 2026 04:13:49 +0200</pubDate><author>niteria@gmail.com (Bartosz Nitka)</author>
+      <guid>http://niteria.github.io/posts/everything-was-const/</guid>
+      <description>&lt;aside class=&#34;clanker-note&#34; style=&#34;border-left: 3px solid #999; padding: 0.4em 0.9em; margin: 1em 0; font-size: 0.92em; color: #555;&#34;&gt;&#xA;  &lt;p style=&#34;margin: 0;&#34;&gt;&lt;strong&gt;How this post was written:&lt;/strong&gt;&#xA;  the experience, the work and the decisions are mine. I used a clanker (a coding agent) to turn my notes, commits and memories into a cohesive story, then reviewed it for accuracy. See &lt;a href=&#34;http://niteria.github.io/posts/why-its-frustrating-to-work-with-clankers/&#34;&gt;my series on working with clankers&lt;/a&gt;.&lt;/p&gt;&#xA;&lt;/aside&gt;&#xA;&#xA;&lt;p&gt;Our service had two arena allocators: one per request and one for constants.&#xA;The constant one turned out not to be constant.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>The Compiler Is Wrong</title>
+      <link>http://niteria.github.io/posts/the-compiler-is-wrong/</link>
+      <pubDate>Sun, 19 Jul 2026 04:13:49 +0200</pubDate><author>niteria@gmail.com (Bartosz Nitka)</author>
+      <guid>http://niteria.github.io/posts/the-compiler-is-wrong/</guid>
+      <description>&lt;aside class=&#34;clanker-note&#34; style=&#34;border-left: 3px solid #999; padding: 0.4em 0.9em; margin: 1em 0; font-size: 0.92em; color: #555;&#34;&gt;&#xA;  &lt;p style=&#34;margin: 0;&#34;&gt;&lt;strong&gt;How this post was written:&lt;/strong&gt;&#xA;  the experience, the work and the decisions are mine. I used a clanker (a coding agent) to turn my notes, commits and memories into a cohesive story, then reviewed it for accuracy. See &lt;a href=&#34;http://niteria.github.io/posts/why-its-frustrating-to-work-with-clankers/&#34;&gt;my series on working with clankers&lt;/a&gt;.&lt;/p&gt;&#xA;&lt;/aside&gt;&#xA;&#xA;&lt;p&gt;&amp;ldquo;It&amp;rsquo;s never the compiler&amp;rdquo; is a good rule.&#xA;My first task on a new team at Facebook was the exception.&#xA;It started with a crash in production and ended with a bug report against GCC.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Debugging a Safe Module</title>
+      <link>http://niteria.github.io/posts/debugging-a-safe-module/</link>
+      <pubDate>Thu, 06 Oct 2016 12:36:55 +0200</pubDate><author>niteria@gmail.com (Bartosz Nitka)</author>
+      <guid>http://niteria.github.io/posts/debugging-a-safe-module/</guid>
+      <description>&lt;p&gt;&lt;strong&gt;TL;DR: change &lt;code&gt;-XSafe&lt;/code&gt; to &lt;code&gt;-XTrustworthy&lt;/code&gt;.&lt;/strong&gt;&lt;/p&gt;&#xA;&lt;p&gt;I&amp;rsquo;ve found myself needing to add some trace statements to &lt;code&gt;System/Environment.hs&lt;/code&gt;.&#xA;The module is marked &lt;code&gt;Safe&lt;/code&gt;, so when you try to:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;import Debug.Trace (trace)&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;you get the following error:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;Debug.Trace: Can&amp;#39;t be safely imported!&#xA;The module itself isn&amp;#39;t safe.&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;I don&amp;rsquo;t know anything about Safe Haskell and I didn&amp;rsquo;t want to learn at the time.&#xA;Removing &lt;code&gt;{-# LANGUAGE Safe #-}&lt;/code&gt; made the &lt;code&gt;Safe&lt;/code&gt; modules depending on&#xA;&lt;code&gt;System.Environment&lt;/code&gt; (the module I was trying to debug) fail to compile,&#xA;so that wasn&amp;rsquo;t an option.&#xA;Turns out you can just bypass this by marking your module as &lt;code&gt;Trustworthy&lt;/code&gt;:&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

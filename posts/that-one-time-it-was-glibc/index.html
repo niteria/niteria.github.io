@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>That One Time It Was Glibc - Bartosz Nitka</title>
+  <meta property="og:title" content="That One Time It Was Glibc - Bartosz Nitka" />
+  <meta name="twitter:title" content="That One Time It Was Glibc - Bartosz Nitka" />
+  <meta name="description" content="
+  How this post was written:
+  the experience, the work and the decisions are mine. I used a clanker (a coding agent) to turn my notes, commits and memories into a cohesive story, then reviewed it for accuracy. See my series on working with clankers.
+
+
+Four years after the compiler was wrong, almost to the day, it was glibc.
+And glibc had already fixed it, four years earlier.">
+  <meta property="og:description" content="
+  How this post was written:
+  the experience, the work and the decisions are mine. I used a clanker (a coding agent) to turn my notes, commits and memories into a cohesive story, then reviewed it for accuracy. See my series on working with clankers.
+
+
+Four years after the compiler was wrong, almost to the day, it was glibc.
+And glibc had already fixed it, four years earlier.">
+  <meta name="twitter:description" content="
+  How this post was written:
+  the experience, the work and the decisions are mine. I used a clanker (a coding agent) to turn my notes, commits and memories into a cohesive story, then reviewed it …">
+  <meta name="author" content="Bartosz Nitka"/>
+  <meta property="og:site_name" content="Bartosz Nitka" />
+  <meta property="og:url" content="http://niteria.github.io/posts/that-one-time-it-was-glibc/" />
+  <meta property="og:type" content="article" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="generator" content="Hugo 0.158.0">
+  <link rel="stylesheet" href="/css/style.css" media="all" />
+
+  <link rel="stylesheet" href="/css/syntax.css" media="all" />
+  <link rel="stylesheet" href="/css/custom.css" media="all" />
+
+  <script src="/js/script.js"></script>
+  <script src="/js/custom.js"></script>
+  <script defer src="/fontawesome/all.min.js"></script>
+</head>
+
+<body>
+
+<header class="site-header">
+  <nav class="site-navi">
+    <h1 class="site-title"><a href="/">Bartosz Nitka</a></h1>
+    <ul class="site-navi-items">
+      <li class="site-navi-item-archives"><a href="/archives/" title="Archives">Archives</a></li>
+      <li class="site-navi-item-about"><a href="/about/" title="About">About</a></li>
+    </ul>
+  </nav>
+</header>
+<hr class="site-header-bottom">
+
+  <div class="main" role="main">
+    <article class="article">
+      
+      
+      <h1 class="article-title">That One Time It Was Glibc</h1>
+      
+      <hr class="article-title-bottom">
+      <ul class="article-meta">
+        <li class="article-meta-date"><time>July 22, 2026</time></li>
+        <li class="article-meta-tags">
+          <a href="/tags/glibc/">
+            <i class="fa-solid fa-tag"></i>
+            glibc
+          </a>&nbsp;
+        </li>
+        <li class="article-meta-tags">
+          <a href="/tags/debugging/">
+            <i class="fa-solid fa-tag"></i>
+            debugging
+          </a>&nbsp;
+        </li>
+        <li class="article-meta-tags">
+          <a href="/tags/software-engineering/">
+            <i class="fa-solid fa-tag"></i>
+            software-engineering
+          </a>&nbsp;
+        </li>
+      </ul>
+      
+<aside class="toc">
+  <nav id="TableOfContents"></nav>
+</aside>
+      <aside class="clanker-note" style="border-left: 3px solid #999; padding: 0.4em 0.9em; margin: 1em 0; font-size: 0.92em; color: #555;">
+  <p style="margin: 0;"><strong>How this post was written:</strong>
+  the experience, the work and the decisions are mine. I used a clanker (a coding agent) to turn my notes, commits and memories into a cohesive story, then reviewed it for accuracy. See <a href="http://niteria.github.io/posts/why-its-frustrating-to-work-with-clankers/">my series on working with clankers</a>.</p>
+</aside>
+
+<p>Four years after <a href="http://niteria.github.io/posts/the-compiler-is-wrong/">the compiler was wrong</a>, almost to the day, it was glibc.
+And glibc had already fixed it, four years earlier.</p>
+<h1 id="loading-haskell-with-the-system-linker">Loading Haskell with the system linker</h1>
+<p>By then <a href="https://engineering.fb.com/2015/06/26/security/fighting-spam-with-haskell/">Sigma</a> was a C++ server that loaded Haskell code, and the Haskell code called back into the server&rsquo;s C++ routines.
+The Haskell code changed hundreds of times a day, so the server loaded each new version while it was running and dropped the old one once nothing referred to it.
+Jon Coens <a href="https://simonmar.github.io/posts/2017-10-17-hotswapping-haskell.html">described how that worked</a> in October 2017.
+The &ldquo;shared objects&rdquo; it loaded were really object files, loaded by GHC&rsquo;s own linker, and they could only go into the lower 2 GB of memory:</p>
+<blockquote>
+<p>We&rsquo;ve already made a few improvements to the GHCi linker to reduce the impact of these problems, but we&rsquo;re running out of options.</p>
+<p>Ideally we&rsquo;d switch to using true shared objects (built with -fPIC) to remove this limitation.</p>
+</blockquote>
+<p>In December 2017 I was working on that, in Facebook&rsquo;s fork of GHC.
+I was adding two functions to GHC&rsquo;s runtime, <a href="https://github.com/facebook/ghc/blob/21edefc4a378fc7c6b9db9615b93a27807fdf4c0/rts/Linker.c#L7490"><code>loadNativeObj</code> and <code>unloadNativeObj</code></a>.
+They load a shared object with Haskell code using the system linker, and have GHC call <code>dlclose()</code> once the code is no longer referenced from the heap.
+With the system linker, the shared object can be loaded outside the low memory region, and its DWARF sections are loaded in a way that <code>perf</code> understands.</p>
+<p>The change lived in Facebook&rsquo;s fork until 2020, when Ray Shih <a href="https://gitlab.haskell.org/ghc/ghc/-/commit/2782487f5f6ad9df4dc8725226a47f07fec77f9f">upstreamed it</a> with the line &ldquo;This change is originally written by niteria&rdquo;.</p>
+<h1 id="who-is-being-loaded">Who is being loaded</h1>
+<p>A Haskell library can export functions to C, which is how a C++ server calls into it.
+When such a library is loaded, its constructors hand the runtime a stable pointer for each of them, through <code>foreignExportStablePtr</code>.
+The runtime has to free those stable pointers when the library is unloaded, so it has to know which library they came from.
+The constructors don&rsquo;t say.
+They do run inside <code>dlopen</code>, so the runtime leaves itself a note before it calls <code>dlopen</code>, and takes the note away afterwards:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>   ForeignExportStablePtr <span style="color:#f92672">*</span>fe_sptr <span style="color:#f92672">=</span> NULL;
+</span></span><span style="display:flex;"><span>   loading_fe_stable_ptr <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>fe_sptr;
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">// dlopen will run foreignExportStablePtr adding StablePtrs from this DLL
+</span></span></span><span style="display:flex;"><span>   <span style="color:#75715e">// to fe_sptr
+</span></span></span><span style="display:flex;"><span>   hdl <span style="color:#f92672">=</span> <span style="color:#a6e22e">dlopen</span>(path, RTLD_NOW<span style="color:#f92672">|</span>RTLD_LOCAL);
+</span></span><span style="display:flex;"><span>   loading_fe_stable_ptr <span style="color:#f92672">=</span> NULL;
+</span></span></code></pre></div><p>The note is a static variable in the same file, and <code>foreignExportStablePtr</code> reads it:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">static</span> ForeignExportStablePtr <span style="color:#f92672">**</span>loading_fe_stable_ptr <span style="color:#f92672">=</span> NULL;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>StgStablePtr <span style="color:#a6e22e">foreignExportStablePtr</span> (StgPtr p)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (loading_fe_stable_ptr <span style="color:#f92672">!=</span> NULL) {
+</span></span><span style="display:flex;"><span>        fe_sptr <span style="color:#f92672">=</span> <span style="color:#a6e22e">stgMallocBytes</span>(<span style="color:#66d9ef">sizeof</span>(ForeignExportStablePtr),
+</span></span><span style="display:flex;"><span>                                 <span style="color:#e6db74">&#34;foreignExportStablePtr&#34;</span>);
+</span></span><span style="display:flex;"><span>        fe_sptr<span style="color:#f92672">-&gt;</span>stable_ptr <span style="color:#f92672">=</span> sptr;
+</span></span><span style="display:flex;"><span>        fe_sptr<span style="color:#f92672">-&gt;</span>next <span style="color:#f92672">=</span> <span style="color:#f92672">*</span>loading_fe_stable_ptr;
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">*</span>loading_fe_stable_ptr <span style="color:#f92672">=</span> fe_sptr;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h1 id="it-never-unloaded">It never unloaded</h1>
+<p>I think the visible symptom was that the Haskell code never unloaded.
+The write-up has a name for objects that don&rsquo;t unload, &ldquo;sticky shared objects&rdquo;, and it says where that ends:</p>
+<blockquote>
+<p>Eventually so many shared objects are linked at once that the process runs out of space to load in a new object, stalling all updates until the process is restarted.</p>
+</blockquote>
+<p>I can&rsquo;t run that setup any more, so I had a clanker rebuild the situation in three small files.
+The first stands in for the runtime&rsquo;s table of stable pointers:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">/* Stands in for the runtime&#39;s stable pointer table. */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> live <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">table_add</span>(<span style="color:#66d9ef">void</span>) { live<span style="color:#f92672">++</span>; }
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">table_free</span>(<span style="color:#66d9ef">int</span> n) { live <span style="color:#f92672">-=</span> n; }
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">table_live</span>(<span style="color:#66d9ef">void</span>) { <span style="color:#66d9ef">return</span> live; }
+</span></span></code></pre></div><p>The second is the runtime&rsquo;s linker.
+It leaves the note, loads the library, and closes it again once nothing that the library registered is left:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#ifdef OLD_GLIBC
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">/* &lt;dlfcn.h&gt; before glibc 2.19, with the __THROW macro expanded. */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">dlopen</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>file, <span style="color:#66d9ef">int</span> mode) <span style="color:#a6e22e">__attribute__</span>((nothrow, leaf));
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">dlclose</span>(<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>handle) <span style="color:#a6e22e">__attribute__</span>((nothrow, leaf));
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#define RTLD_NOW 2
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#else
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;dlfcn.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#endif
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#ifndef QUALIFIER
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#define QUALIFIER
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#endif
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">table_add</span>(<span style="color:#66d9ef">void</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">table_free</span>(<span style="color:#66d9ef">int</span> n);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">table_live</span>(<span style="color:#66d9ef">void</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/* While a library is being loaded, its registrations are counted here. */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span>QUALIFIER loading <span style="color:#f92672">=</span> NULL;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/* Called from the constructors of the library. */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">report</span>(<span style="color:#66d9ef">void</span>) {
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">table_add</span>();
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (loading <span style="color:#f92672">!=</span> NULL) (<span style="color:#f92672">*</span>loading)<span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> round <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; round <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">3</span>; round<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> mine <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    loading <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>mine;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>handle <span style="color:#f92672">=</span> <span style="color:#a6e22e">dlopen</span>(<span style="color:#e6db74">&#34;./libplugin.so&#34;</span>, RTLD_NOW);
+</span></span><span style="display:flex;"><span>    loading <span style="color:#f92672">=</span> NULL;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/* Unload: free what the library registered, and close it once
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">       nothing refers to it any more. */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">table_free</span>(mine);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">table_live</span>() <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">dlclose</span>(handle);
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;round %d: closed</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, round);
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;round %d: still in use</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, round);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">puts</span>(<span style="color:#e6db74">&#34;exiting&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>The third is a C++ library with one static object:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cstdio&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> <span style="color:#66d9ef">void</span> report(<span style="color:#66d9ef">void</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Registration</span> {
+</span></span><span style="display:flex;"><span>  Registration() { puts(<span style="color:#e6db74">&#34;  constructor&#34;</span>); report(); }
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">~</span>Registration() { puts(<span style="color:#e6db74">&#34;  destructor&#34;</span>); }
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> Registration registration;
+</span></span></code></pre></div><p><code>OLD_GLIBC</code> selects the declaration of <code>dlopen</code> that glibc had at the time.</p>
+<pre tabindex="0"><code>$ g++ -shared -fPIC plugin.cpp -o libplugin.so
+$ gcc -O2 -DOLD_GLIBC -rdynamic host.c table.c -ldl -o host &amp;&amp; ./host
+  constructor
+round 1: still in use
+round 2: still in use
+round 3: still in use
+exiting
+  destructor
+</code></pre><p>Three rounds of loading and unloading, and the library is never closed.
+The registration from the constructor never shows up in <code>mine</code>, so the host never frees it, and the library always looks as if it were still in use.
+Its constructor runs once, because <code>dlopen</code> doesn&rsquo;t run the constructors of a library that is still loaded.
+Its destructor only runs when the program exits.</p>
+<h1 id="the-assignment-that-wasnt-there">The assignment that wasn&rsquo;t there</h1>
+<p>It is a miserable kind of bug to chase.
+It goes away without optimization.
+It also goes away if you put an <code>fprintf</code> between the assignment and the call to see what is going on.</p>
+<p>I read the disassembly.
+This is the call to <code>dlopen</code> in the optimized <code>main</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-asm" data-lang="asm"><span style="display:flex;"><span>	<span style="color:#a6e22e">movl</span>	<span style="color:#66d9ef">$2</span>, %esi
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">leaq</span>	<span style="color:#66d9ef">.LC0</span>(%rip), %rdi
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">call</span>	<span style="color:#66d9ef">dlopen@PLT</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">xorl</span>	%edi, %edi
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">movq</span>	<span style="color:#66d9ef">$0</span>, <span style="color:#66d9ef">loading</span>(%rip)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">movq</span>	%rax, %r12
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">call</span>	<span style="color:#66d9ef">table_free@PLT</span>
+</span></span></code></pre></div><p>The note is never left.
+The only write to <code>loading</code> is the one after the call, and the count passed to <code>table_free</code> is a constant zero.</p>
+<h1 id="a-leaf-that-calls-back">A leaf that calls back</h1>
+<p><code>dlopen</code> comes from glibc.
+From version 2.15 to version 2.18, glibc declared it like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">dlopen</span> (<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>__file, <span style="color:#66d9ef">int</span> __mode) __THROW;
+</span></span></code></pre></div><p><code>__THROW</code> looks as if it were about exceptions.
+In those versions it also said <code>leaf</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e"># define __LEAF , __leaf__
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"># define __THROW	__attribute__ ((__nothrow__ __LEAF))
+</span></span></span></code></pre></div><p>This is what <code>leaf</code> promises, according to <a href="https://gcc.gnu.org/onlinedocs/gcc-4.8.5/gcc/Function-Attributes.html">GCC&rsquo;s manual</a>:</p>
+<blockquote>
+<p>Calls to external functions with this attribute must return to the current compilation unit only by return or by exception handling.
+In particular, leaf functions are not allowed to call callback function passed to it from the current compilation unit or directly call functions exported by the unit or longjmp into the unit.</p>
+</blockquote>
+<p>And this is what the compiler does with the promise:</p>
+<blockquote>
+<p>The compiler takes the hint that any data not escaping the current compilation unit can not be used or modified by the leaf function.</p>
+</blockquote>
+<p><code>dlopen</code> breaks that promise whenever a constructor of the library it loads calls back into the file that called <code>dlopen</code>.
+Ours did.
+So GCC took the hint.
+The note is a static variable, a leaf function can&rsquo;t read it, and it is overwritten right after the call.
+That makes the first assignment dead, and GCC removed it.
+The constructors ran, found no note, and recorded nothing.</p>
+<p>The stable pointers were still created, and the exported functions don&rsquo;t go through them, so the Haskell code ran as usual.
+The only thing missing was the record of which library they belonged to, and that only matters when the library is unloaded.
+Then none of them are freed, and a stable pointer that is never freed is a reference into the library that never goes away.</p>
+<p>The <code>fprintf</code> brought it back because <code>fprintf</code> is not a leaf function, so the compiler has to assume it might read the note.</p>
+<p>With the declaration glibc has today, the note is written before the call and the count is read back after it:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-asm" data-lang="asm"><span style="display:flex;"><span>	<span style="color:#a6e22e">movl</span>	<span style="color:#66d9ef">$0</span>, -<span style="color:#ae81ff">36</span>(%rbp)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">movq</span>	%r13, <span style="color:#66d9ef">loading</span>(%rip)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">call</span>	<span style="color:#66d9ef">dlopen@PLT</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">movl</span>	-<span style="color:#ae81ff">36</span>(%rbp), %edi
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">movq</span>	<span style="color:#66d9ef">$0</span>, <span style="color:#66d9ef">loading</span>(%rip)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">movq</span>	%rax, %r12
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">call</span>	<span style="color:#66d9ef">table_free@PLT</span>
+</span></span></code></pre></div><p>And the program does what it should:</p>
+<pre tabindex="0"><code>$ gcc -O2 -rdynamic host.c table.c -ldl -o host &amp;&amp; ./host
+  constructor
+  destructor
+round 1: closed
+  constructor
+  destructor
+round 2: closed
+  constructor
+  destructor
+round 3: closed
+exiting
+</code></pre><p>GCC 4.8.5 behaves the same as today&rsquo;s GCC, with either declaration.</p>
+<h1 id="fixed-four-years-ago">Fixed four years ago</h1>
+<p>glibc had fixed this in August 2013.
+Mike Frysinger&rsquo;s <a href="https://sourceware.org/legacy-ml/libc-alpha/2013-08/msg00465.html">patch</a> says why:</p>
+<blockquote>
+<p>Since the dlopen funcs might invoke a constructor that is in the same compilation unit as the caller, we cannot mark them as leaf funcs.</p>
+</blockquote>
+<p>It went into glibc 2.19, which came out in February 2014.
+The glibc we were building against was older than that.</p>
+<p>So the workaround went into <a href="https://github.com/facebook/ghc/blob/21edefc4a378fc7c6b9db9615b93a27807fdf4c0/rts/Linker.c#L1473">my change</a>, as one word and a comment:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// volatile works around
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// https://sourceware.org/ml/libc-alpha/2013-08/msg00465.html
+</span></span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> ForeignExportStablePtr <span style="color:#f92672">**</span> <span style="color:#66d9ef">volatile</span> loading_fe_stable_ptr <span style="color:#f92672">=</span> NULL;
+</span></span></code></pre></div><p>GCC&rsquo;s manual recommends the same thing for the one such case it mentions, a signal handler that uses static variables:</p>
+<blockquote>
+<p>The only compliant way to write such a signal handler is to declare such variables volatile.</p>
+</blockquote>
+<p>In the small program it is <code>-DQUALIFIER=volatile</code>.
+With it, the old declaration gives the same three constructors and three destructors as today&rsquo;s.</p>
+    </article>
+
+    
+
+
+    <ul class="pager article-pager">
+      <li class="pager-newer">
+          <a href="/posts/a-picture-is-worth-1024-words/" data-toggle="tooltip" data-placement="top" title="A Picture Is Worth 1024³ WORDs">&lt; Newer</a>
+      </li>
+      <li class="pager-older">
+        <a href="/posts/what-would-you-do-if-you-werent-afraid/" data-toggle="tooltip" data-placement="top" title="What Would You Do if You Weren&#39;t Afraid?">Older &gt;</a>
+      </li>
+    </ul>
+  </div>
+
+
+<div class="site-footer">
+  <div class="copyright">&copy; Copyright 2019 Bartosz Nitka</div>
+  <ul class="site-footer-items">
+    <li class="site-footer-item-about"><a href="/about/" title="About">About</a></li>
+  </ul>
+  <div class="powerdby">
+    Powered by <a href="https://gohugo.io/">Hugo</a> and <a href="https://github.com/taikii/whiteplain">Whiteplain</a>
+  </div>
+</div>
+
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-P5EZCXRPMM"></script>
+      <script>
+        var doNotTrack = false;
+        if ( true ) {
+          var dnt = (navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack);
+          var doNotTrack = (dnt == "1" || dnt == "yes");
+        }
+        if (!doNotTrack) {
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-P5EZCXRPMM');
+        }
+      </script>
+
+</body>
+</html>

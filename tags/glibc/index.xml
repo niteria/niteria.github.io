@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Glibc on Bartosz Nitka</title>
+    <link>http://niteria.github.io/tags/glibc/</link>
+    <description>Recent content in Glibc on Bartosz Nitka</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <managingEditor>niteria@gmail.com (Bartosz Nitka)</managingEditor>
+    <webMaster>niteria@gmail.com (Bartosz Nitka)</webMaster>
+    <copyright>&amp;copy; Copyright 2019 Bartosz Nitka</copyright>
+    <lastBuildDate>Wed, 22 Jul 2026 04:13:49 +0200</lastBuildDate>
+    <atom:link href="http://niteria.github.io/tags/glibc/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>That One Time It Was Glibc</title>
+      <link>http://niteria.github.io/posts/that-one-time-it-was-glibc/</link>
+      <pubDate>Wed, 22 Jul 2026 04:13:49 +0200</pubDate><author>niteria@gmail.com (Bartosz Nitka)</author>
+      <guid>http://niteria.github.io/posts/that-one-time-it-was-glibc/</guid>
+      <description>&lt;aside class=&#34;clanker-note&#34; style=&#34;border-left: 3px solid #999; padding: 0.4em 0.9em; margin: 1em 0; font-size: 0.92em; color: #555;&#34;&gt;&#xA;  &lt;p style=&#34;margin: 0;&#34;&gt;&lt;strong&gt;How this post was written:&lt;/strong&gt;&#xA;  the experience, the work and the decisions are mine. I used a clanker (a coding agent) to turn my notes, commits and memories into a cohesive story, then reviewed it for accuracy. See &lt;a href=&#34;http://niteria.github.io/posts/why-its-frustrating-to-work-with-clankers/&#34;&gt;my series on working with clankers&lt;/a&gt;.&lt;/p&gt;&#xA;&lt;/aside&gt;&#xA;&#xA;&lt;p&gt;Four years after &lt;a href=&#34;http://niteria.github.io/posts/the-compiler-is-wrong/&#34;&gt;the compiler was wrong&lt;/a&gt;, almost to the day, it was glibc.&#xA;And glibc had already fixed it, four years earlier.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

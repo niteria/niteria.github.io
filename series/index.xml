@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Series on Bartosz Nitka</title>
+    <link>http://niteria.github.io/series/</link>
+    <description>Recent content in Series on Bartosz Nitka</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <managingEditor>niteria@gmail.com (Bartosz Nitka)</managingEditor>
+    <webMaster>niteria@gmail.com (Bartosz Nitka)</webMaster>
+    <copyright>&amp;copy; Copyright 2019 Bartosz Nitka</copyright>
+    <lastBuildDate>Sun, 19 Jul 2026 03:46:25 +0200</lastBuildDate>
+    <atom:link href="http://niteria.github.io/series/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Coding Agents and Limits</title>
+      <link>http://niteria.github.io/series/coding-agents-and-limits/</link>
+      <pubDate>Sun, 19 Jul 2026 03:46:25 +0200</pubDate><author>niteria@gmail.com (Bartosz Nitka)</author>
+      <guid>http://niteria.github.io/series/coding-agents-and-limits/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>
